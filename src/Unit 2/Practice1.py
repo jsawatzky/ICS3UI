@@ -33,8 +33,24 @@ if part == 1:
     
 elif part == 2:
     
-    pass
+    age = input("Please enter your age: ")
+    valid = False
+    while valid == False:
+        try:
+            age = float(age)
+            valid = True
+        except ValueError:
+            age = input("Invalid! Your age must be a number! Please try again: ")
+    
+    if age >= 19:
+        print("You are old enough to drive, vote and drink alcohol.")
+    elif age >= 18:
+        print("You are old enough to drive and vote.")
+    elif age >= 16:
+        print("You are old enough to drive.")
+    else:
+        print("You are not old enough to do anything.")
 
 elif part == 3:
     
-    pass
+    print("Way to lazy to come up with a mad libs story.")

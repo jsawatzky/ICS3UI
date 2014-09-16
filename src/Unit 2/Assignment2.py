@@ -12,13 +12,13 @@ if part == "1":
     
     num = input("Please enter a number between 1 and 100: ")
     valid = False
-    while vaild == False:
+    while valid == False:
         try:
             numInt = int(num)
             if 1 > numInt or numInt > 100:
                 num = input("The number must be in between 1 and 100. Please try again: ")
             else:
-                vaild = True
+                valid = True
         except ValueError:
             num = input("You must enter a number! Please try again: ")
             
@@ -34,6 +34,10 @@ if part == "1":
         elif lastChar == "3":
             if num != "13":
                 ending = "rd"
+        else:
+            ending = "th"
+        
+        print(num + ending)
 
 elif part == "2":
     
