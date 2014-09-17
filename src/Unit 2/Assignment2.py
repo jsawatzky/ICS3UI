@@ -19,6 +19,7 @@ def getInt(numStr):
                 numStr = input("You must enter a number! Please try again: ")
     return numInt
 
+##Gets the float version of a string
 def getNum(numStr):
     valid = False
     while valid == False:
@@ -29,79 +30,93 @@ def getNum(numStr):
             numStr = input("You must enter a number! Please try again: ")
     return num
 
-part = input("Which part would you like to do? (1/2/3): ")
-while part != "1" and part != "2" and part != "3":
-    part = input("Invalid! Must be 1, 2 or 3! Please try again: ")
-    
-if part == "1":
-    
-    num = input("Please enter a number between 1 and 100: ")
-    numInt = getInt(num)
-    while 1 > numInt < 101:
-        num = input("You must enter a number in between 1 and 100! Please try again: ")
-        numInt = getInt(num)
-            
-    numChar = len(num)
-    lastChar = num[numChar - 1]
-       
-    if lastChar == "1":
-        if num != "11":
-            ending = "st"
-    elif lastChar == "2":
-        if num != "12":
-            ending = "nd"
-    elif lastChar == "3":
-        if num != "13":
-            ending = "rd"
-    else:
-        ending = "th"
+again = True
+while again == True: 
+    ##Asks which part the user wants to do
+    part = input("Which part would you like to do? (1/2/3): ")
+    while part != "1" and part != "2" and part != "3":
+        part = input("Invalid! Must be 1, 2 or 3! Please try again: ")
         
-    print(num + ending)
-
-elif part == "2":
+    if part == "1": ##Part 1
+        
+        squared = u"\u00B2"
+        
+        a = getNum(input("Please enter the A value: "))
+        b = getNum(input("Please enter the B value: "))
+        c = getNum(input("Please enter the C value: "))
+        
+        if a % 1 == 0:
+            a = int(a)
+        if b % 1 == 0:
+            b = int(b)
+        if c % 1 == 0:
+            c = int(c)
+        
+        exp = "The formated expression is: "
+        
+        ##Gets the A part
+        if a == -1:
+            exp += "-x" + squared
+        elif a == 1:
+            exp += "x" + squared
+        elif a < -1 or a > 1:
+            exp += str(a) + "x" + squared
+        else:
+            pass
+        ##Gets the B part
+        if b == -1:
+            exp += "-x"
+        elif b == 1:
+            exp += "+x"
+        elif b < -1:
+            exp += str(b) + "x"
+        elif b > 1:
+            exp += "+" + str(b) + "x"
+        else:
+            pass
+        ##Gets the C part
+        if c < -1:
+            exp += str(c)
+        elif c > 1:
+            exp += "+" + str(c)
+        else:
+            pass
+        
+        print(exp)
     
-    squared = u"\u00B2"
-    
-    a = getNum(input("Please enter the A value: "))
-    b = getNum(input("Please enter the B value: "))
-    c = getNum(input("Please enter the C value: "))
-    
-    if a % 1 == 0:
-        a = int(a)
-    if b % 1 == 0:
-        b = int(b)
-    if c % 1 == 0:
-        c = int(c)
-    
-    exp = "The formated expression is: "
-    
-    if a == -1:
-        exp += "-x" + squared
-    elif a == 1:
-        exp += "x" + squared
-    elif a < -1 or a > 1:
-        exp += str(a) + "x" + squared
-    else:
+    elif part == "2": ##Part 2
+        
+        numInt = getInt(input("Please enter a number: "))
+        while numInt < 1 or numInt > 100:
+            numInt = getInt(input("Invalid! Please enter a number in between 1 and 100: "))
+        num = str(numInt)
+                
+        numChar = len(num)
+        lastChar = num[numChar - 1]
+           
+        if lastChar == "1":
+            if num[numChar - 2] != "1":
+                ending = "st"
+        elif lastChar == "2":
+            if num[numChar - 2] != "1":
+                ending = "nd"
+        elif lastChar == "3":
+            if num[numChar - 2] != "1":
+                ending = "rd"
+        else:
+            ending = "th"
+            
+        print(num + ending)
+        
+    else: ##Part 3
+        
         pass
-    if b == -1:
-        exp += "-x"
-    elif b == 1:
-        exp += "+x"
-    elif b < -1:
-        exp += str(b) + "x"
-    elif b > 1:
-        exp += "+" + str(b) + "x"
+    
+    ##Asks if user wants do do another one
+    again = input("Would you like to do another? (y/n): ")
+    while again != "y" and again != "n":
+        again = input("Invalid! Please enter a y or an n: ")
+    if again == "y":
+        again = True
     else:
-        pass
-    if c < -1:
-        exp += str(c)
-    elif c > 1:
-        exp += "+" + str(c)
-    else:
-        pass
-    
-    print(exp)
-    
-else:
-    
-    pass
+        again = False
