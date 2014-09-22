@@ -33,6 +33,10 @@ def getNum(numStr):
 again = True
 while again == True: 
     ##Asks which part the user wants to do
+    print("Assignment 2:")
+    print("Part 1: Trinomials")
+    print("Part 2: Ordinal Numbers")
+    print("Part 3: Quadrilateral")
     part = input("Which part would you like to do? (1/2/3): ")
     while part != "1" and part != "2" and part != "3":
         part = input("Invalid! Must be 1, 2 or 3! Please try again: ")
@@ -110,7 +114,12 @@ while again == True:
         
     else: ##Part 3
         
-        pass
+        points = {'A': 0, 'B': 0, 'C'}
+        
+        for i in ("A", "B", "C", "D"):
+            x = getNum(input("Please enter the x for point " + i + ": "))
+            y = getNum(input("Please enter the y for point " + i + ": "))
+            points[i] = {}
     
     ##Asks if user wants do do another one
     again = input("Would you like to do another? (y/n): ")
