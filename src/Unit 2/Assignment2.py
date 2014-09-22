@@ -4,6 +4,8 @@ Created on Sep 15, 2014
 @author: Jacob Sawatzky
 '''
 
+from math import sqrt
+
 ##Gets the integer version of a string
 def getInt(numStr):
     valid = False
@@ -110,16 +112,37 @@ while again == True:
         else:
             ending = "th"
             
-        print(num + ending)
+        print("The ordinal is: " + num + ending)
         
     else: ##Part 3
         
-        points = {'A': 0, 'B': 0, 'C'}
+        points = {'A': {}, 'B': {}, 'C': {}, 'D': {}}
+        for i in ('A', 'B', 'C', 'D'):
+            points[i]['x'] = getNum(input("Please enter the x for point " + i + ": "))
+            points[i]['y'] = getNum(input("Please enter the y for point " + i + ": "))
+    
         
-        for i in ("A", "B", "C", "D"):
-            x = getNum(input("Please enter the x for point " + i + ": "))
-            y = getNum(input("Please enter the y for point " + i + ": "))
-            points[i] = {}
+        lines = {'AB': {'M': {}}, 'AC': {'M': {}}, 'AD': {'M': {}}, 'BC': {'M': {}}, 'BD': {'M': {}}, 'CD': {'M': {}}}
+        for i in ('AB', 'AC', 'AD', 'BC', 'BD', 'CD'):
+            x1 = points[i[0]]['x']
+            y1 = points[i[0]]['y']
+            x2 = points[i[1]]['x']
+            y2 = points[i[1]]['y']
+            if x1 == x2:
+                lines[i]['m'] = "u"
+                lines[i]['l'] = x2 - x1
+            else:
+                lines[i]['m'] = (y2 - y1) / (x2 - x1)
+                if y1 == y2:
+                    lines[i]['l'] = y2 - y1
+                else:
+                    lines[i]['l'] = sqrt(((x2 - x1)**2) + ((y2 - y1)**2))
+            if lines[i]['l'] < 0:
+                lines[i]['l'] *= -1
+            lines[i]['M']['x'] = (x1 + x2) / 2
+            lines[i]['M']['y'] = (y1 + y2) / 2
+            
+        
     
     ##Asks if user wants do do another one
     again = input("Would you like to do another? (y/n): ")
