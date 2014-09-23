@@ -73,7 +73,10 @@ while again == True:
         if b == -1:
             exp += "-x"
         elif b == 1:
-            exp += "+x"
+            if a == 0:
+                exp += "x"
+            else:
+                exp += "+x"
         elif b < -1:
             exp += str(b) + "x"
         elif b > 1:
@@ -84,7 +87,10 @@ while again == True:
         if c < -1:
             exp += str(c)
         elif c > 1:
-            exp += "+" + str(c)
+            if a == 0 and b == 0:
+                exp += str(c)
+            else:
+                exp += "+" + str(c)
         else:
             pass
         
@@ -141,8 +147,12 @@ while again == True:
                 lines[i]['l'] *= -1
             lines[i]['M']['x'] = (x1 + x2) / 2
             lines[i]['M']['y'] = (y1 + y2) / 2
-            
-        
+          
+        if lines['AB']['m'] == lines['BC']['m'] == lines['CD']['m'] ==lines['AD']['m']:
+            print("This is a straight line.")
+        elif lines['AC']['l'] == lines['BD']['l'] and lines['AC']['m'] * lines['BD']['m'] == -1:
+            print("The four points form a square.")
+        elif 
     
     ##Asks if user wants do do another one
     again = input("Would you like to do another? (y/n): ")
