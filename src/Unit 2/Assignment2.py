@@ -148,11 +148,16 @@ while again == True:
             lines[i]['M']['x'] = (x1 + x2) / 2
             lines[i]['M']['y'] = (y1 + y2) / 2
           
-        if lines['AB']['m'] == lines['BC']['m'] == lines['CD']['m'] ==lines['AD']['m']:
-            print("This is a straight line.")
+        if lines['AB']['m'] == lines['BC']['m'] == lines['CD']['m'] == lines['AD']['m']:
+            print("The four points form a straight line.")
+        elif lines['AB']['m'] == lines['BC']['m'] or lines['AB']['m'] == lines['CD']['m'] or lines['AB']['m'] == lines['AD']['m']:
+            print("The four points a triangle.")
+        elif lines['BC']['m'] == lines['CD']['m'] or lines['BC']['m'] == lines['AD']['m']:
+            print("The four points a triangle.")
+        elif lines['CD']['m'] == lines['AD']['m']:
+            print("The four points form a triangle")
         elif lines['AC']['l'] == lines['BD']['l'] and lines['AC']['m'] * lines['BD']['m'] == -1:
             print("The four points form a square.")
-        elif 
     
     ##Asks if user wants do do another one
     again = input("Would you like to do another? (y/n): ")
