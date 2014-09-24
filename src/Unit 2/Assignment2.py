@@ -5,6 +5,7 @@ Created on Sep 15, 2014
 '''
 
 from math import sqrt
+from tkinter import *
 
 ##Gets the integer version of a string
 def getInt(numStr):
@@ -122,11 +123,58 @@ while again == True:
         
     else: ##Part 3
         
+        def orderPoints(points):
+            xs = [points['A']['x'], points['B']['x'], points['C']['x'], points['C']['x']]
+            ys = [points['A']['y'], points['B']['y'], points['C']['y'], points['C']['y']]
+            x1 = xs[0]
+            y1 = ys[0]
+            for i in range(1, 3):
+                if xs[i] <= x1 and ys[i] >= y1:
+                    x1 = xs[i]
+                    y1 = ys[i]
+            x2 = xs[0]
+            y2 = ys[0]
+            for i in range(1, 3):
+                if xs[i] >= x2 and ys[i] >= y2:
+                    x2 = xs[i]
+                    y2 = ys[i]
+            x3 = xs[0]
+            y3 = ys[0]
+            for i in range(1, 3):
+                if xs[i] >= x3 and ys[i] <= y3:
+                    x3 = xs[i]
+                    y3 = ys[i]
+            x4 = xs[0]
+            y4 = ys[0]
+            for i in range(1, 3):
+                if xs[i] <= x4 and ys[i] <= y4:
+                    x4 = xs[i]
+                    y4 = ys[i]
+            
+            points['A']['x'] = x1
+            points['A']['y'] = y1
+            points['B']['x'] = x2
+            points['B']['y'] = y2
+            points['C']['x'] = x3
+            points['C']['y'] = y3
+            points['D']['x'] = x4
+            points['D']['y'] = y4
+            return points
+        
         points = {'A': {}, 'B': {}, 'C': {}, 'D': {}}
+        used = []
         for i in ('A', 'B', 'C', 'D'):
-            points[i]['x'] = getNum(input("Please enter the x for point " + i + ": "))
-            points[i]['y'] = getNum(input("Please enter the y for point " + i + ": "))
-    
+            x = getNum(input("Please enter the x for point " + i + ": "))
+            y = getNum(input("Please enter the y for point " + i + ": "))
+            for j in used:
+                while x == points[j]['x'] and y == points[j]['y']:
+                    print("You cannot enter two of the same point! Please enter a different cordinate.")
+                    x = getNum(input("Please enter the x for point " + i + ": "))
+                    y = getNum(input("Please enter the y for point " + i + ": "))
+            points[i]['x'] = x
+            points[i]['y'] = y
+            used.append(i)
+        points = orderPoints(points)
         
         lines = {'AB': {'M': {}}, 'AC': {'M': {}}, 'AD': {'M': {}}, 'BC': {'M': {}}, 'BD': {'M': {}}, 'CD': {'M': {}}}
         for i in ('AB', 'AC', 'AD', 'BC', 'BD', 'CD'):
@@ -150,12 +198,22 @@ while again == True:
           
         if lines['AB']['m'] == lines['BC']['m'] == lines['CD']['m'] == lines['AD']['m']:
             print("The four points form a straight line.")
-        elif lines['AB']['m'] == lines['BC']['m'] or lines['AB']['m'] == lines['AD']['m'] or lines['BC']['m'] == lines['CD']['m']:
+        elif lines['AB']['m'] == lines['BC']['m'] or lines['AB']['m'] == lines['AD']['m'] or lines['BC']['m'] == lines['CD']['m'] or lines['CD']['m'] == lines['AD']['m']:
             print("The four points a triangle.")
-        elif lines['CD']['m'] == lines['AD']['m']:
-            print("The four points form a triangle")
-        elif lines['AC']['l'] == lines['BD']['l'] and lines['AC']['m'] * lines['BD']['m'] == -1:
+        elif lines['AC']['l'] == lines['BD']['l'] and lines['AC']['M']['x'] == lines['BD']['M']['x'] and lines['AC']['M']['y'] == lines['BD']['M']['y'] and lines['AC']['m'] * lines['BD']['m'] == -1:
             print("The four points form a square.")
+            
+        img = input("Would you like to see a picture of the shape? (y/n): ")
+        while img != "y" and img != "n":
+            again = input("Invalid! Please enter a y or an n: ")
+        if img == "y":
+            myInterface = Tk()
+            s = Canvas(myInterface, width=800, height=800, background="white")
+            s.pack()
+            
+            s.create_polygon(points['A']['x']+350, points['A']['y']+350, points['B']['x']+350, points['B']['y']+350, points['C']['x']+450, points['C']['y']+450, points['D']['x']+350, points['D']['y']+450, fill="blue")
+            
+            s.update()
     
     ##Asks if user wants do do another one
     again = input("Would you like to do another? (y/n): ")
