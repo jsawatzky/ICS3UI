@@ -150,9 +150,7 @@ while again == True:
           
         if lines['AB']['m'] == lines['BC']['m'] == lines['CD']['m'] == lines['AD']['m']:
             print("The four points form a straight line.")
-        elif lines['AB']['m'] == lines['BC']['m'] or lines['AB']['m'] == lines['CD']['m'] or lines['AB']['m'] == lines['AD']['m']:
-            print("The four points a triangle.")
-        elif lines['BC']['m'] == lines['CD']['m'] or lines['BC']['m'] == lines['AD']['m']:
+        elif lines['AB']['m'] == lines['BC']['m'] or lines['AB']['m'] == lines['AD']['m'] or lines['BC']['m'] == lines['CD']['m']:
             print("The four points a triangle.")
         elif lines['CD']['m'] == lines['AD']['m']:
             print("The four points form a triangle")
