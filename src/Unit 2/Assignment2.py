@@ -123,43 +123,68 @@ while again == True:
         
     else: ##Part 3
         
-        def orderPoints(points):
-            xs = [points['A']['x'], points['B']['x'], points['C']['x'], points['C']['x']]
-            ys = [points['A']['y'], points['B']['y'], points['C']['y'], points['C']['y']]
-            x1 = xs[0]
-            y1 = ys[0]
-            for i in range(1, 3):
-                if xs[i] <= x1 and ys[i] >= y1:
-                    x1 = xs[i]
-                    y1 = ys[i]
-            x2 = xs[0]
-            y2 = ys[0]
-            for i in range(1, 3):
-                if xs[i] >= x2 and ys[i] >= y2:
-                    x2 = xs[i]
-                    y2 = ys[i]
-            x3 = xs[0]
-            y3 = ys[0]
-            for i in range(1, 3):
-                if xs[i] >= x3 and ys[i] <= y3:
-                    x3 = xs[i]
-                    y3 = ys[i]
-            x4 = xs[0]
-            y4 = ys[0]
-            for i in range(1, 3):
-                if xs[i] <= x4 and ys[i] <= y4:
-                    x4 = xs[i]
-                    y4 = ys[i]
-            
-            points['A']['x'] = x1
-            points['A']['y'] = y1
-            points['B']['x'] = x2
-            points['B']['y'] = y2
-            points['C']['x'] = x3
-            points['C']['y'] = y3
-            points['D']['x'] = x4
-            points['D']['y'] = y4
-            return points
+#         def orderPoints(points):
+#             xs = [points['A']['x'], points['B']['x'], points['C']['x'], points['C']['x']]
+#             ys = [points['A']['y'], points['B']['y'], points['C']['y'], points['C']['y']]
+#             xs.sort(key=None, reverse=False)
+#             x1 = xs[0]
+#             y1 = ys[0]
+#             for i in range(1, 3):
+#                 if ys[i] >= y1:
+#                     if xs[i] <= x1:
+#                         x1 = xs[i]
+#                         y1 = ys[i]
+#                     elif xs[i] >= x1:
+#                         pass
+#                     else:
+#                         x1 = xs[i]
+#                         y1 = ys[i]
+#             x2 = xs[0]
+#             y2 = ys[0]
+#             for i in range(1, 3):
+#                 if ys[i] >= y2:
+#                     if xs[i] >= x2:
+#                         x2 = xs[i]
+#                         y2 = ys[i]
+#                     elif xs[i] <= x2:
+#                         pass
+#                     else:
+#                         x2 = xs[i]
+#                         y2 = ys[i]
+#             x3 = xs[0]
+#             y3 = ys[0]
+#             for i in range(1, 3):
+#                 if ys[i] >= y3:
+#                     if xs[i] >= x3:
+#                         x3 = xs[i]
+#                         y3 = ys[i]
+#                     elif xs[i] <= x3:
+#                         pass
+#                     else:
+#                         x3 = xs[i]
+#                         y3 = ys[i]
+#             x4 = xs[0]
+#             y4 = ys[0]
+#             for i in range(1, 3):
+#                 if ys[i] >= y2:
+#                     if xs[i] >= x2:
+#                         x2 = xs[i]
+#                         y2 = ys[i]
+#                     elif xs[i] <= x2:
+#                         pass
+#                     else:
+#                         x2 = xs[i]
+#                         y2 = ys[i]
+#             
+#             points['A']['x'] = x1
+#             points['A']['y'] = y1
+#             points['B']['x'] = x2
+#             points['B']['y'] = y2
+#             points['C']['x'] = x3
+#             points['C']['y'] = y3
+#             points['D']['x'] = x4
+#             points['D']['y'] = y4
+#             return points
         
         points = {'A': {}, 'B': {}, 'C': {}, 'D': {}}
         used = []
@@ -174,7 +199,6 @@ while again == True:
             points[i]['x'] = x
             points[i]['y'] = y
             used.append(i)
-        points = orderPoints(points)
         
         lines = {'AB': {'M': {}}, 'AC': {'M': {}}, 'AD': {'M': {}}, 'BC': {'M': {}}, 'BD': {'M': {}}, 'CD': {'M': {}}}
         for i in ('AB', 'AC', 'AD', 'BC', 'BD', 'CD'):
@@ -205,15 +229,31 @@ while again == True:
             
         img = input("Would you like to see a picture of the shape? (y/n): ")
         while img != "y" and img != "n":
-            again = input("Invalid! Please enter a y or an n: ")
+            img = input("Invalid! Please enter a y or an n: ")
         if img == "y":
             myInterface = Tk()
             s = Canvas(myInterface, width=800, height=800, background="white")
             s.pack()
             
-            s.create_polygon(points['A']['x']+350, points['A']['y']+350, points['B']['x']+350, points['B']['y']+350, points['C']['x']+450, points['C']['y']+450, points['D']['x']+350, points['D']['y']+450, fill="blue")
+            for i in ('A', 'B', 'C', 'D'):
+                points[i]['x'] *= 20
+                points[i]['y'] *= 20
+                points[i]['x'] += 400
+                points[i]['y'] += 400
+            s.create_polygon(points['A']['x'], points['A']['y'], points['B']['x'], points['B']['y'], points['C']['x'], points['C']['y'], points['D']['x'], points['D']['y'], fill="blue")
             
+            done = False
+            def buttonCmd():
+                global done
+                done = True
+            button = Button(s, text="Done", command = buttonCmd, anchor = W)
+            button.configure(width = 10, activebackground = "green")
+            s.create_window(710, 760, anchor = NW, window = button)
             s.update()
+            
+            while done != True:
+                s.update()
+            myInterface.destroy()
     
     ##Asks if user wants do do another one
     again = input("Would you like to do another? (y/n): ")
