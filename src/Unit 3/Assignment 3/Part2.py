@@ -29,35 +29,39 @@ button.configure(width = 10, activebackground = "green")
 s.create_window(710, 760, anchor = NW, window = button)
 
 #Start x and y of the blue lines
-x = 100
-y = HEIGHT-100
+x = int(WIDTH/2)
+y = int(HEIGHT/2)
 
 #Length of the blue lines
-length = min(WIDTH, HEIGHT)-200
+length = int((min(WIDTH, HEIGHT)-200) / 2)
 
 #Draws blue lines
-s.create_line(x, y, x + length, y, fill = "blue")
-s.create_line(x, y, x, y - length, fill = "blue")
+s.create_line(x - length, y, x + length, y, fill = "blue")
+s.create_line(x, y - length, x, y + length, fill = "blue")
 
 #Array to keep track of lines
 lines = []
 
 #Function to draw the lines on the screen based on the selected user input
 def drawLines():
-    global length, x, y, entry, lines
-    spacing = int(length / int(entry.get()))
+    global length, x, y, numLines, lines
+    spacing = int(length / int(numLines.get()))
     for line in lines:
         s.delete(line)
-    for i in range(x+spacing, x+length, spacing):
-        lines.append(s.create_line(i, y, x, i, fill = "yellow"))
+    for i in range(1, int(numLines.get())+1):
+        x1 = x
+        y1 = (y - length) + spacing * i
+        x2 = x + spacing * i
+        y2 = y
+        lines.append(s.create_line(x1, y1, x2, y2, fill = "yellow"))
     
 #Question at top of screen
 text = s.create_text(WIDTH/2, 7, text = "How many lines would you like?", fill = "white", anchor = N, font = "Times 14")
 
 #Drop down menu
-entry = StringVar(s)
-entry.set(int(length/40))
-menu = OptionMenu(s, entry, int(length/40), int(length/35), int(length/30), int(length/25), int(length/20))
+numLines = StringVar(s)
+numLines.set(int(length/40))
+menu = OptionMenu(s, numLines, int(length/40), int(length/35), int(length/30), int(length/25), int(length/20))
 menu.configure(width = 7)
 menuW = s.create_window((WIDTH/2)+15, 45, window = menu, anchor = E)
 
