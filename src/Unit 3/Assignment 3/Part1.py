@@ -21,11 +21,12 @@ else:
 types = {100: "$100 bill", 50: "$50 bill", 20: "$20 bill", 10: "$10 bill", 5: "$5 bill", 2: "toonie", 1: "loonie", 0.25: "quarter", 0.1: "dime", 0.05: "nickel"}
 #Runs once for each type of bill or coin
 for amount in [100, 50, 20, 10, 5, 2, 1, 0.25, 0.1, 0.05]:
-    num = 0
-    while dollar - amount >= 0:
+    num = int(dollar/amount)
+    dollar -= num*amount
+    if amount == 0.1 and 0.07 < dollar < 0.1:
         num += 1
-        dollar -= amount
-    if amount == 0.05 and 0.02 < dollar < 0.05:
+        dollar = 0
+    elif amount == 0.05 and 0.02 < dollar < 0.05:
         num += 1
         dollar = 0
     if num > 0:
