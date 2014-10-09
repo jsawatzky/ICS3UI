@@ -32,6 +32,7 @@ def subimage(src, l, t, r, b):
 #Create Deck
 cardSprite = PhotoImage(file = "cards.gif")
 cardBack = subimage(cardSprite, 0, 400, 71, 499)
+imgFiles = []
 cards = []
 cardTracker = {}
 y = 0
@@ -40,14 +41,17 @@ for suit in ['Hearts', 'Diamonds', 'Clubs', 'Spades']:
     for type in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]:
         x1 = x*72
         y1 = y*100
-        img = s.create_image(-5000, -5000, image = subimage(cardSprite, x1, y1, x1+71, y1+99))
+        imgFile = subimage(cardSprite, x1, y1, x1+71, y1+99)
+        imgFiles.append(imgFile)
+        img = s.create_image(-5000, -5000, image = imgFiles[imgFiles.index(imgFile)])
         cardTracker[img] = {}
-        cardTracker[img]['holder'] = "deck"
         cardTracker[img]['value'] = type
         cardTracker[img]['suit'] = suit
         cards.append(img)
         x += 1
     y += 1
+
+print(cards)
 
 #Variables
 cardIndex = 0
@@ -74,7 +78,6 @@ def dealCard(player):
     card = cards[cardIndex]
     if player == "player":
         playerHand.append(card)
-        cardTracker[card]['holder'] = "player"
         playerCur[0] += cardTracker[card]['value']
         if cardTracker[card]['value'] == 1:
             playerCur[1] += 11
@@ -82,12 +85,12 @@ def dealCard(player):
             playerCur[1] += cardTracker[card]['value']
     elif player == "dealer":
         dealerHand.append(card)
-        cardTracker[card]['holder'] = "dealer"
         if cardTracker[card]['value'] == 1:
             if dealerCur > 10:
                 dealerCur += 1
             else:
                 dealerCur += 11
+    cardIndex += 1
 
 #Components
 bet = Scale(s, from_ = 10, to = money, orient = HORIZONTAL, resolution = 10)
@@ -101,10 +104,12 @@ def main():
     
     shuffle(cards)
     
+    print(cards)
+    
     s.coords(betW, 650, 750)
     s.coords(setBetW, 750, 750)
     while curBet == 0:
-        print("Waiting")
+        pass
         
     cardIndex = 0
     
@@ -126,10 +131,11 @@ def main():
     stand = False
     bust = False
     
+    print(playerHand)
     index = 0
     for card in playerHand:
         print("Card drawn")
-        s.coords(card, index*72, 0)
+        s.coords(card, 400+index*72, 400)
         s.update()
         index += 1
     
@@ -162,6 +168,8 @@ class MainThread(Thread):
             
 mainThread = MainThread()
 mainThread.start()
+
+grid(s, 25)
 
 while True:
     s.update()

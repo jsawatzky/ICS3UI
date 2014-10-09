@@ -35,7 +35,7 @@ def getNum(numStr, suffix=""):
 def grid(s, spacing):
     for x in range(0, 800, spacing): 
         s.create_line(x, 10, x, 800, fill="magenta")
-        s.create_text(x, 0, text=str(x), font="Times 8", anchor = N, fill = "white")
+        s.create_text(x, 0, text=str(x), font="Times 8", anchor = N)
     for y in range(0, 800, spacing):
         s.create_line(20, y, 800, y, fill="magenta")
         s.create_text(0, y, text=str(y), font="Times 8", anchor = W)
