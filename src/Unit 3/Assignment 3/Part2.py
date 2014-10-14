@@ -17,7 +17,6 @@ HEIGHT = 800
 #Creates the screen
 myInterface = Tk()
 s = Canvas(myInterface, width=WIDTH, height=HEIGHT, background="black")
-s.pack()
 
 #Command and button to close window
 def buttonCmd():
@@ -129,9 +128,15 @@ button2W = s.create_window(WIDTH-50, 45, window = button2, anchor = W)
 
 updateMirroring()
 
-#Update loop
-while running == True:
-    try:
-        s.update()
-    except:
-        running = False
+def run():
+    global running
+    s.pack()
+    #Update loop
+    while running == True:
+        try:
+            s.update()
+        except:
+            running = False
+
+if __name__ == "__main__":
+    run()
