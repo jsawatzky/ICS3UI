@@ -724,7 +724,7 @@ def run():
         try:
             main()
         except:
-            break
+            return
     quitFunc()
 
 if __name__ == "__main__":

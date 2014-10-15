@@ -64,6 +64,9 @@ def drawBoxes():
             y2 = y1 + tileHeight
             
             s.create_rectangle(x1, y1, x2, y2, fill = colors[row%7])
+            s.create_text(x1+((x2-x1)/2), y1+((y2-y1)/2), text = "_", fill = "black", font = "Times 10", anchor = S)
+            s.create_text(x1+((x2-x1)/2), y1+((y2-y1)/2)-5, text = "1", fill = "black", font = "Times 10", anchor = S)
+            s.create_text(x1+((x2-x1)/2), y1+((y2-y1)/2)+5, text = str(row+1), fill = "black", font = "Times 10", anchor = N)
             
             x1 += tileWidth
     
