@@ -3,4 +3,6 @@
 #################
 
 .pydevproject
-.project
+.project/__pycache__
+/.project
+/__pycache__
