@@ -48,23 +48,20 @@ def drawRipple():
     global s, WIDTH, HEIGHT, x, y, running, text, ripple
     
     running = True
-    s.delete(text)
+    s.coords(text, -5000, -5000)
     
     radius = 0
     
-    lUL = sqrt((x**2)+(y**2))
-    lUR = sqrt(((WIDTH-x)**2)+(y**2))
-    lLL = sqrt((x**2)+((HEIGHT-y)**2))
-    lLR = sqrt(((WIDTH-x)**2)+((HEIGHT-y)**2))
-    
-    while radius <= lUL or radius <= lUR or radius <= lLL or radius <= lLR:
+    while x-radius > 0 and y-radius > 0 and x+radius < WIDTH and y+radius < HEIGHT:
         
         s.coords(ripple, x-radius, y-radius, x+radius, y+radius)
         s.update()
         
-        radius += 4
+        radius += 5
         
         pause(0.02)
+        
+    s.coords(text, 400, 400)
         
     running = False
 
@@ -75,9 +72,8 @@ def run():
     s = Canvas(tk, width = WIDTH, height = HEIGHT, bg = "Light Blue")
     s.bind("<Button-1>", click)
     ripple = s.create_oval(-5000,-5000, -5000, -5000, fill = None, outline = "blue")
-    s.pack()
-    
     text = s.create_text(400, 400, text = "Click anywhere on the screen", font = "Times 30")
+    s.pack()
     
     while True:
         
