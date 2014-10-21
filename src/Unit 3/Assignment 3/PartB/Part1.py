@@ -6,48 +6,73 @@ Created on Oct 14, 2014
 
 from tkinter import *
 
+done = False
+
+s = None
+label = None
+button = None
+
 WIDTH = 800
 HEIGHT = WIDTH
 
-tk = Tk()
-s = Canvas(tk, width=WIDTH, height=HEIGHT, bg = "black")
-
 tileSize = WIDTH/8
 
-for row in range(0, 8):
-    
-    if row % 2 == 0:
-        x1 = 0
-    else:
-        x1 = tileSize
-    y1 = row*tileSize
-    y2 = y1 + tileSize
-    
-    for column in range(0, 8, 2):
+def doneF():
+    global done
+    done = True
+
+def draw(s):
+    for row in range(0, 8):
         
-        x2 = x1 + tileSize
-        
-        s.create_rectangle(x1, y1, x2, y2, fill = "red", outline="red")
-        
-        if row < 3:
-            color = "blue"
-        elif row > 4:
-            color = "green"
+        if row % 2 == 0:
+            x1 = 0
         else:
-            color = None
-            
-        if color != None:
-            s.create_oval(x1+10, y1+10, x2-10, y2-10, fill = color, outline = "black")
+            x1 = tileSize
+        y1 = row*tileSize
+        y2 = y1 + tileSize
         
-        x1 += tileSize*2
+        for column in range(0, 8, 2):
+            
+            x2 = x1 + tileSize
+            
+            s.create_rectangle(x1, y1, x2, y2, fill = "red", outline="red")
+            
+            if row < 3:
+                color = "blue"
+            elif row > 4:
+                color = "green"
+            else:
+                color = None
+                
+            if color != None:
+                s.create_oval(x1+10, y1+10, x2-10, y2-10, fill = color, outline = "black")
+            
+            x1 += tileSize*2
         
 def run():
-    s.pack()
-    while True:
+    global done, s, label, doneB
+    
+    tk = Tk()
+    
+    label = Label(tk, text = "Checker Board", font = "Times 20 bold")
+    label.grid(row = 0, sticky = W)
+    doneB = Button(tk, text = "Done", command = doneF, width = 10)
+    doneB.grid(row = 0, column = 1, sticky = E)
+    s = Canvas(tk, width=WIDTH, height=HEIGHT, bg = "black")
+    s.grid(row = 1, column = 0, columnspan = 2)
+    draw(s)
+    while done == False:
         try:
             s.update()
         except:
             break
+    tk.destroy()
+        
+def clean():
+    global s, label, doneB
+    s.grid_forget()
+    label.grid_forget()
+    doneB.grid_forget()
         
 if __name__ == "__main__":
-    run()
+    run(Tk())

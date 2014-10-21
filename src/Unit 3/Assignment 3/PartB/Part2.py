@@ -6,46 +6,53 @@ Created on Oct 14, 2014
 
 from tkinter import *
 
+done = False
+
+def doneF():
+    global done
+    done = True
+
 WIDTH = 400
 HEIGHT = 800
 
 regionX = 0
 regionY = 0
 
-tk = Tk()
 s = None
-label = Label(tk, text = "How many rows of fractions do you want?")
-entry = Entry(tk)
+label = None
+entry = None
+button = None
+errorLabel = None
+scrollX = None
+scrollY = None
+doneB = None
+label2 = None
 numRows = 0
-def setNumRows():
+def setNumRows(self = None):
     global WIDTH, HEIGHT, regionX, regionY, tk, label, entry, button, errorLabel, numRows
     try:
         numRows = int(entry.get())
-        if numRows == 0:
+        if numRows <= 0:
             raise ValueError
     except ValueError:
-        errorLabel = Label(tk, text = "You must enter an integer!")
-        errorLabel.grid(row = 2, columnspan = 2)
+        return
     else:
         if numRows > WIDTH/25:
             regionX = numRows*25
         else:
             regionX = WIDTH
-        ##ADD SCROLL BAR
         if numRows > HEIGHT/50:
             regionY = numRows*50
         else:
             regionY = HEIGHT
-        label.destroy()
-        entry.destroy()
-        button.destroy()
         if errorLabel != None:
             errorLabel.destroy()
-button = Button(tk, text = "Enter", command = setNumRows)
-errorLabel = None
+        drawBoxes()
 
 def drawBoxes():
     global s, regionX, regionY, numRows
+    
+    s.delete(ALL)
     
     colors = ["red", "pink", "purple", "blue", "green", "yellow", "orange"]
     
@@ -69,42 +76,52 @@ def drawBoxes():
             s.create_text(x1+((x2-x1)/2), y1+((y2-y1)/2)+5, text = str(row+1), fill = "black", font = "Times 10 bold", anchor = N)
             
             x1 += tileWidth
-    
-    
-    
-def run():
-    global s, numRows, WIDTH, HEIGHT, regionX, regionY, label, entry, button
-    
-    label.grid(row = 0, columnspan = 2)
-    entry.grid(row = 1, column = 0, sticky = E)
-    button.grid(row = 1, column = 1, sticky = W)
-    
-    while numRows == 0:
-        try:
-            tk.update()
-        except:
-            return
-    
-    scrollX = Scrollbar(tk, orient = HORIZONTAL)
-    scrollY = Scrollbar(tk)
-    if regionX > WIDTH:
-        scrollX.grid(row = 1, column = 0, sticky = E+W)
-    if regionY > HEIGHT:
-        scrollY.grid(row = 0, column=1, sticky = N+S)
-    s = Canvas(tk, width=WIDTH, height=HEIGHT, bg = "black", xscrollcommand = scrollX.set, yscrollcommand = scrollY.set)
-    s.grid(row = 0, column = 0)
-    scrollX.config(command = s.xview)
-    scrollY.config(command = s.yview)
-    
-    drawBoxes()
+            
     
     s.config(scrollregion=s.bbox(ALL))
     
-    while True:
+def run():
+    global s, numRows, WIDTH, HEIGHT, regionX, regionY, label, entry, button, done, scrollX, scrollY, label2, doneB
+    
+    tk = Tk()
+    
+    label2 = Label(tk, text = "Fraction Wall", font = "Times 20 bold")
+    label2.grid(row = 0, sticky = W)
+    doneB = Button(tk, text = "Done", command = doneF, width = 10)
+    doneB.grid(row = 0, column = 1, columnspan = 2, sticky = E)
+    
+    label = Label(tk, text = "How many rows of fractions do you want:")
+    label.grid(row = 1, sticky = W)
+    entry = Entry(tk)
+    entry.bind("<Return>", setNumRows)
+    entry.grid(row = 1, column = 1, sticky = E)
+    button = Button(tk, text = "Enter", command = setNumRows)
+    button.grid(row = 1, column = 2, sticky = W)
+    
+    scrollX = Scrollbar(tk, orient = HORIZONTAL)
+    scrollY = Scrollbar(tk)
+    scrollX.grid(row = 4, column = 0, sticky = E+W, columnspan = 3)
+    scrollY.grid(row = 3, column=3, sticky = N+S)
+    s = Canvas(tk, width=WIDTH, height=HEIGHT, bg = "black", xscrollcommand = scrollX.set, yscrollcommand = scrollY.set)
+    s.grid(row = 3, column = 0, columnspan = 3)
+    scrollX.config(command = s.xview)
+    scrollY.config(command = s.yview)
+    
+    while done == False:
         try:
             s.update()
         except:
-            return
+            break
+    tk.destroy()
+        
+def clean():
+    global s, label, label2, entry, button, doneB
+    s.destroy()
+    label.destroy()
+    label2.destroy()
+    entry.destroy()
+    button.destroy()
+    doneB.destroy()
         
 if __name__ == "__main__":
-    run()
+    run(Tk())

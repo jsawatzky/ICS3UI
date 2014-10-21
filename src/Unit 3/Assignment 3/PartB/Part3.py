@@ -8,6 +8,12 @@ from tkinter import *
 from threading import Timer
 from math import sqrt
 
+done = False
+
+def doneF():
+    global done
+    done = True
+
 WIDTH = 800
 HEIGHT = 800
 
@@ -57,6 +63,9 @@ def drawRipple():
         s.coords(ripple, x-radius, y-radius, x+radius, y+radius)
         s.update()
         
+        if done == True:
+            return
+        
         radius += 5
         
         pause(0.02)
@@ -66,21 +75,28 @@ def drawRipple():
     running = False
 
 def run():
-    global s, x, y, text, ripple
+    global s, x, y, text, ripple, done
     
     tk = Tk()
+    
+    label = Label(tk, text = "Single Ripple", font = "Times 20 bold")
+    label.grid(row = 0, sticky = W)
+    doneB = Button(tk, text = "Done", command = doneF, width = 10)
+    doneB.grid(row = 0, column = 1, sticky = E)
+    
     s = Canvas(tk, width = WIDTH, height = HEIGHT, bg = "Light Blue")
     s.bind("<Button-1>", click)
     ripple = s.create_oval(-5000,-5000, -5000, -5000, fill = None, outline = "blue")
     text = s.create_text(400, 400, text = "Click anywhere on the screen", font = "Times 30")
-    s.pack()
+    s.grid(column = 0, columnspan = 2)
     
-    while True:
+    while done == False:
         
         try:
             s.update()
         except:
-            return
+            break
+    tk.destroy()
 
 if __name__ == "__main__":
-    run()
+    run(Tk())
