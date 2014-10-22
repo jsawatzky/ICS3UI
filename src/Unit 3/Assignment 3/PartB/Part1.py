@@ -53,6 +53,7 @@ def run():
     global done, s, label, doneB
     
     tk = Tk()
+    tk.focus_force()
     
     label = Label(tk, text = "Checker Board", font = "Times 20 bold")
     label.grid(row = 0, sticky = W)
@@ -66,13 +67,10 @@ def run():
             s.update()
         except:
             break
-    tk.destroy()
-        
-def clean():
-    global s, label, doneB
-    s.grid_forget()
-    label.grid_forget()
-    doneB.grid_forget()
+    try:
+        tk.destroy()
+    except:
+        pass
         
 if __name__ == "__main__":
-    run(Tk())
+    run()

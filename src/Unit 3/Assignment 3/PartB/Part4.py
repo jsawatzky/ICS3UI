@@ -87,6 +87,7 @@ def run():
     global s, x, y, text, done
     
     tk = Tk()
+    tk.focus_force()
     
     label = Label(tk, text = "Multi Ripple", font = "Times 20 bold")
     label.grid(row = 0, sticky = W)
@@ -104,7 +105,10 @@ def run():
             s.update()
         except:
             break
-    tk.destroy()
+    try:
+        tk.destroy()
+    except:
+        pass
 
 if __name__ == "__main__":
-    run(Tk())
+    run()

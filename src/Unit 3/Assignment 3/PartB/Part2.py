@@ -35,8 +35,10 @@ def setNumRows(self = None):
         if numRows <= 0:
             raise ValueError
     except ValueError:
+        entry.delete(0, END)
         return
     else:
+        entry.delete(0, END)
         if numRows > WIDTH/25:
             regionX = numRows*25
         else:
@@ -84,6 +86,7 @@ def run():
     global s, numRows, WIDTH, HEIGHT, regionX, regionY, label, entry, button, done, scrollX, scrollY, label2, doneB
     
     tk = Tk()
+    tk.focus_force()
     
     label2 = Label(tk, text = "Fraction Wall", font = "Times 20 bold")
     label2.grid(row = 0, sticky = W)
@@ -112,16 +115,10 @@ def run():
             s.update()
         except:
             break
-    tk.destroy()
-        
-def clean():
-    global s, label, label2, entry, button, doneB
-    s.destroy()
-    label.destroy()
-    label2.destroy()
-    entry.destroy()
-    button.destroy()
-    doneB.destroy()
+    try:
+        tk.destroy()
+    except:
+        pass
         
 if __name__ == "__main__":
-    run(Tk())
+    run()
