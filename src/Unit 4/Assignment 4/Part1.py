@@ -12,6 +12,7 @@ def getNames(tk):
     
     label = Label(tk, text = "Please enter name #1:")
     entry = Entry(tk)
+    tk.bind("<Return>", lambda event: names.append(entry.get()))
     enterButton = Button(tk, text = "Enter", command = lambda: names.append(entry.get()))
     doneButton = Button(tk, text = "Done", command = lambda: names.append("done"))
     label.grid(row = 0, column = 0, columnspan = 2)
