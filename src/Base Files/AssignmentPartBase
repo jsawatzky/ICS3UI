@@ -1,0 +1,13 @@
+from tkinter import *
+
+##Functions go here
+
+def run(tk = Tk()):
+    
+    #Main program goes here
+    
+    for widget in tk.children:
+        widget.grid_forget()
+        
+if __name__ == "__main__":
+    run()

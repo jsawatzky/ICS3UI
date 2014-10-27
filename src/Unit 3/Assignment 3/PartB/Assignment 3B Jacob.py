@@ -1,8 +1,8 @@
-'''
+"""
 Created on Oct 21, 2014
 
 @author: Jacob Sawatzky
-'''
+"""
 
 import Part1, Part2, Part3, Part4
 from tkinter import *
