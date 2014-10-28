@@ -41,5 +41,5 @@ def pause(time, tk):
         
 def clearScreen(tk):
     
-    for widget in tk.children:
+    for widget in tk.children.values():
         widget.grid_forget()

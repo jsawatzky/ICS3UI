@@ -5,6 +5,7 @@ Created on Oct 24, 2014
 '''
 
 from tkinter import *
+from utilities import *
 
 def getNames(tk):
     
@@ -30,14 +31,35 @@ def getNames(tk):
         oldSize = len(names)
         
     names.remove("done")
+    clearScreen(tk)
     return names
 
-def run():
+def play(names, tk):
     
-    tk = Tk()
+    rhyme = ["Eenie", "meenie", "miney", "moe", "catch", "a", "tiger", "by", "the", "toe"]
+    
+    nameLength = len(names)
+    
+    nameLabels = []
+    for i in range(0, round((nameLength/5)+0.5)):
+        for x in range(0, min((i+1)*5, nameLength-(i*5))):
+            nameLabels.append[Label(tk, text = names[i*5+x])]
+            nameLabels[len(nameLabels)-1].grid(row = i+1, column = x)
+    
+    while True:
+        tk.update()
+    
+    while nameLength > 1:
+        for i in range(0, len(rhyme)):
+            pass
+
+def run(tk):
     
     names = getNames(tk)
-    print(names)
+    play(names, tk)
+    
+    clearScreen(tk)
 
+#Runs the program if not from menu
 if __name__ == "__main__":
-    run()
+    run(Tk())

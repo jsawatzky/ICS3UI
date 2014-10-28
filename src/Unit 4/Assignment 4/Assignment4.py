@@ -1,6 +1,11 @@
+'''
+Created on Oct 27, 2014
+
+@author: Jacob Sawatzky
+'''
 from tkinter import *
 from utilities import *
-#import Part1, Part2, Part3, Part4
+import Part1#, Part2, Part3, Part4
 
 #Edit for assignment
 assignmentName = "Assignment __"
