@@ -43,7 +43,7 @@ def play(names, tk):
     nameLabels = []
     for i in range(0, round((nameLength/5)+0.5)):
         for x in range(0, min((i+1)*5, nameLength-(i*5))):
-            nameLabels.append[Label(tk, text = names[i*5+x])]
+            nameLabels.append(Label(tk, text = names[i*5+x]))
             nameLabels[len(nameLabels)-1].grid(row = i+1, column = x)
     
     while True:
