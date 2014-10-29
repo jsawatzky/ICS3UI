@@ -9,7 +9,7 @@ from threading import Thread
 from time import sleep
 from tkinter import *
 
-from utilities import *
+#from utilities import *
 
 
 #Boolean for update loops
@@ -25,7 +25,7 @@ s = Canvas(myInterface, width=WIDTH, height=HEIGHT, background="white")
 s.pack()
 
 #Draws grid
-grid(s, 25)
+#grid(s, 25)
 
 #Command and button to close window
 def buttonCmd():
