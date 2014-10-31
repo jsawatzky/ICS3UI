@@ -35,7 +35,7 @@ def grid(s, spacing):
 def pause(time, tk):
     
     paused = Boolean(True)
-    Timer(time, lambda: paused.set(False))
+    Timer(time, lambda: paused.set(False)).start()
     while paused.get() == True:
         tk.update()
         

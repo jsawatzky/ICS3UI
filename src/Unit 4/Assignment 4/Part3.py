@@ -12,18 +12,20 @@ class Sun():
     def __init__(self, startY, peak):
         self.k = peak
         self.h = 400
-        self.a = sqrt(startY + self.k)/(-self.h)
+        self.a = sqrt(startY - self.k)/(self.h)
         self.object = None
         
     def update(self, time):
+        if time > 1525:
+            time -= 1600
         self.x = time
-        self.y = self.a*((self.x-self.h)**2) + self.k
+        self.y = self.a*((time-self.h)**2) + self.k
         
     def draw(self, s):
         if self.object == None:
             self.object = s.create_oval(self.x-75, self.y-75, self.x+75, self.x+75, fill = "yellow", outline = "yellow")
         else:
-            s.coords(self.object, self.x-75, self.y-75, self.x+75, self.x+75)
+            s.coords(self.object, self.x-75, self.y-75, self.x+75, self.y+75)
 
 ##Functions go here
 
