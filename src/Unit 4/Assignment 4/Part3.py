@@ -8,6 +8,63 @@ from utilities import *
 from random import choice
 
 #Classes
+class Sky():
+    
+    def __init__(self):
+        colors = {}
+        colors['sunrise'] = [255, 192, 18]
+        colors['sunset'] = [222, 133, 1]
+        colors['day'] = [58, 160, 255]
+        colors['night'] = [18, 28, 67]
+        self.colors = colors
+        
+    def __getColor(self, startColor, endColor, startTime, endTime, time):
+        
+        startRed = startColor[0]
+        startGreen = startColor[1]
+        startBlue = startColor[2]
+        endRed = endColor[0]
+        endGreen = endColor[1]
+        endBlue = endColor[2]
+        
+        red = (startRed*(endTime-time) + endRed*(time-startTime))/(endTime-startTime)
+        green = (startGreen*(endTime-time) + endGreen*(time-startTime))/(endTime-startTime)
+        blue = (startBlue*(endTime-time) + endBlue*(time-startTime))/(endTime-startTime)
+        
+        color = "#%02x%02x%02x" % (red, green, blue)
+        
+        return color
+        
+    def update(self, s, time):
+        
+        colors = self.colors
+        
+        if time in range(0, 26):
+            tempColors = []
+            for i in range(0, 3):
+                tempColors.append((colors['sunset'][i]+colors['sunrise'][i])/2)
+            color = self.__getColor(tempColors, colors['sunrise'], 0, 25, time)
+        elif time in range(26, 76):
+            color = self.__getColor(colors['sunrise'], colors['day'], 26, 75, time)
+        elif time in range(76, 726):
+            color = "#3AA0FF"
+        elif time in range(726, 776):
+            color = self.__getColor(colors['day'], colors['sunrise'], 726, 775, time)
+        elif time in range(776, 826):
+            color = self.__getColor(colors['sunrise'], colors['sunset'], 776, 825, time)
+        elif time in range(826, 876):
+            color = self.__getColor(colors['sunset'], colors['night'], 826, 875, time)
+        elif time in range(876, 1526):
+            color = "#121C43"
+        elif time in range(1526, 1576):
+            color = self.__getColor(colors['night'], colors['sunset'], 1526, 1576, time)
+        elif time in range(1576, 1601):
+            tempColors = []
+            for i in range(0, 3):
+                tempColors.append((colors['sunset'][i]+colors['sunrise'][i])/2)
+            color = self.__getColor(colors['sunset'], tempColors, 1576, 1600, time)
+        s.config(background = color)
+
 class Sun():
     
     def __init__(self, startY, peak):
@@ -48,27 +105,11 @@ class Moon():
             self.object = s.create_oval(self.x-50, self.y-50, self.x+50, self.x+50, fill = "white", outline = "white")
         else:
             s.coords(self.object, self.x-50, self.y-50, self.x+50, self.y+50)
-            
-class Sky():
+        
+class Ground():
     
     def __init__(self):
-        colors = {}
-        colors['sunrise'] = "#FFC012"
-        colors['sunset'] = "#DE8501"
-        colors['day'] = "#3AA0FF"
-        colors['night'] = "#121C43"
-        self.colors = colors
-        
-    def update(self, s, time):
-        if 0 <= time < 75 or 725 <= time < 800:
-            color = self.colors['sunrise'] 
-        elif 75 <= time < 725:
-            color = self.colors['day']
-        elif 800 <= time < 875 or 1525 <= time < 1600:
-            color = self.colors['sunset']
-        else:
-            color = self.colors['night']
-        s.config(background = color)
+        pass
 
 ##Functions
 def run(tk):
@@ -80,14 +121,14 @@ def run(tk):
     sun = Sun(300, 100)
     moon = Moon(300, 100)
     
-    time = 0
+    time = 75
     day = 1
     seasons = ["spring", "summer", "fall", "winter"]
     season = "spring"
     seasonStages = ["early", "mid", "mid", "late"]
     seasonStage = 0
     
-    weatherOptions = ["clear", "clear", "clear", "overcast", "rain", "storm"]
+    weatherOptions = ["clear", "clear", "clear", "clear", "cloudy", "cloudy", "overcast", "rain", "storm"]
     weather = 0
     
     while True:
