@@ -15,7 +15,7 @@ class Moon():
         
         queueItemBack1 = QueueItem("create", 'arc', 0, 0, 0, 0, fill = "#0e1637", outline = "#0e1637", start = 270, extent = 180)
         queueItemBack2 = QueueItem("create", 'arc', 0, 0, 0, 0, fill = "#0e1637", outline = "#0e1637", start = 90, extent = 180)
-        queueItemFront = QueueItem("create", 'oval', 0, 0, 0, 0, fill = "white", outline = "white")
+        queueItemFront = QueueItem("create", 'oval', 0, 0, 0, 0, fill = "#EEEEEE", outline = "#EEEEEE")
         
         self.queue.put(queueItemBack1)
         self.queue.put(queueItemBack2)
@@ -41,22 +41,22 @@ class Moon():
         day %= 8
         
         if day < 2 or day > 5:
-            self.queue.put(QueueItem("itemconfig", self.front, fill = "white", outline = "white"))
+            self.queue.put(QueueItem("itemconfig", self.front, fill = "#EEEEEE", outline = "#EEEEEE"))
         else:
             self.queue.put(QueueItem("itemconfig", self.front, fill = "#0e1637", outline = "#0e1637"))
             
         if day == 0:
-            self.queue.put(QueueItem("itemconfig", self.back1, fill = "white", outline = "white"))
-            self.queue.put(QueueItem("itemconfig", self.back2, fill = "white", outline = "white"))
+            self.queue.put(QueueItem("itemconfig", self.back1, fill = "#EEEEEE", outline = "#EEEEEE"))
+            self.queue.put(QueueItem("itemconfig", self.back2, fill = "#EEEEEE", outline = "#EEEEEE"))
         elif 0 < day < 4:
-            self.queue.put(QueueItem("itemconfig", self.back1, fill = "white", outline = "white"))
+            self.queue.put(QueueItem("itemconfig", self.back1, fill = "#EEEEEE", outline = "#EEEEEE"))
             self.queue.put(QueueItem("itemconfig", self.back2, fill = "#0e1637", outline = "#0e1637"))
         elif day == 4:
             self.queue.put(QueueItem("itemconfig", self.back1, fill = "#0e1637", outline = "#0e1637"))
             self.queue.put(QueueItem("itemconfig", self.back2, fill = "#0e1637", outline = "#0e1637"))
         else:
             self.queue.put(QueueItem("itemconfig", self.back1, fill = "#0e1637", outline = "#0e1637"))
-            self.queue.put(QueueItem("itemconfig", self.back2, fill = "white", outline = "white"))
+            self.queue.put(QueueItem("itemconfig", self.back2, fill = "#EEEEEE", outline = "#EEEEEE"))
             
         day %= 4
         

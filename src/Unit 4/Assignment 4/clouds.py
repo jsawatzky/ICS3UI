@@ -9,11 +9,13 @@ from random import randint
 
 class Clouds(Thread):
     
-    def __init__(self, queue):
+    def __init__(self, queue, mainThread):
         
         Thread.__init__(self)
+        self.daemon = True
         
         self.queue = queue
+        self.mainThread = mainThread
         
         self.colors = {'cloudy': "white", 'overcast': "#323232", 'rain': "#646464", 'storm': "#969696"}
         self.oldWeather = "clear"
@@ -21,12 +23,17 @@ class Clouds(Thread):
         
         self.objects = []
         for i in range(10):
+            x = randint(800, 1600)
+            y = randint(850, 1700)
             width = randint(50, 150)
             self.objects.append({
+                                 'x': x,
+                                 'y': y,
                                  'width': width,
                                  'speed': randint(1, 4),
+                                 'color': "white",
                                  'objects': []})
-            for x in range(5):
+            for o in range(5):
                 x = randint(10, width-10)
                 y = randint(10, 30)
                 queueItem = QueueItem("create", 'oval', x, y, x, y, fill = "white", outline = "white")
@@ -48,7 +55,14 @@ class Clouds(Thread):
         
     def update(self):
         
-        pass
+        for i in range(len(self.objects)):
+            self.objects[i]['x'] += self.objects[i]['speed']
+            
+            if self.weather != "clear":
+                
+                self.objects[i]['color'] = self.colors[self.weather]
+                
+                
     
     def draw(self):
         

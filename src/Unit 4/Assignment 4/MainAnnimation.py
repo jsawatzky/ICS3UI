@@ -13,6 +13,7 @@ from time import sleep
 from sky import Sky
 from sun import Sun
 from moon import Moon
+from clouds import Clouds
 from ground import Ground
 
 class MainThread(Thread):
@@ -20,6 +21,7 @@ class MainThread(Thread):
     def __init__(self, queue):
         
         Thread.__init__(self)
+        self.daemon = True
         
         self.queue = queue
         
@@ -28,9 +30,10 @@ class MainThread(Thread):
         sky = Sky(self.queue)
         sun = Sun(self.queue, 300, 100)
         moon = Moon(self.queue, 300, 100)
+        #clouds = Clouds(self.queue, self)
         ground = Ground(self.queue)
         
-        time = 75
+        self.time = 75
         day = 0
         seasons = ["spring", "summer", "fall", "winter"]
         season = "spring"
@@ -42,18 +45,18 @@ class MainThread(Thread):
         
         while True:
             
-            sky.update(time)
-            sun.update(time)
-            moon.update(time, day)
-            ground.update(time, season, seasonStage, seasons)
+            sky.update(self.time)
+            sun.update(self.time)
+            moon.update(self.time, day)
+            ground.update(self.time, season, seasonStage, seasons)
             
             sun.draw()
             moon.draw()
             ground.draw()
                    
-            time += 1
-            if time > 1600:
-                time = 0
+            self.time += 1
+            if self.time > 1600:
+                self.time = 0
                 day += 1
                 if day > 15:
                     day = 0
@@ -66,6 +69,10 @@ class MainThread(Thread):
                     weather = choice(weatherOptions)
             
             sleep(0.01)
+            
+    def getTime(self):
+        
+        return self.time
 
 ##Functions
 def run(tk):
@@ -85,19 +92,23 @@ def run(tk):
         except Empty:
             pass
         else:
-            if task.oper == "create":
-                object = s._create(task.object, task.coords, task.kw)
-                task.returnObject(object)
-            elif task.oper == "config":
-                s.config(task.kw)
-            elif task.oper == "coords":
-                s.coords(task.object, task.coords)
-            elif task.oper == "itemconfig":
-                s.itemconfig(task.object, task.kw)
-            
-        tk.update()
-    
-    clearScreen(tk)
+            try:
+                if task.oper == "create":
+                    object = s._create(task.object, task.coords, task.kw)
+                    task.returnObject(object)
+                elif task.oper == "config":
+                    s.config(task.kw)
+                elif task.oper == "coords":
+                    s.coords(task.object, task.coords)
+                elif task.oper == "itemconfig":
+                    s.itemconfig(task.object, task.kw)
+            except:
+                break
+        
+        try:        
+            tk.update()
+        except:
+            break
         
 #Runs the program if not from menu
 if __name__ == "__main__":
