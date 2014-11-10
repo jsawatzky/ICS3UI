@@ -1,10 +1,10 @@
 - Sun/Moon cycle (done)
 - Changing sky (done)
-- Changing ground
+- Changing ground (done)
 - Clouds
 - Rain/Snow
+- Meteors
 - Flowers
 - Tree
 - Falling leaves
-- Birds
-- Pond
+- House (maybe)
