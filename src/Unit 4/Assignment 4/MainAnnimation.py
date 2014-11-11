@@ -17,13 +17,14 @@ from ground import Ground
 
 class MainThread(Process):
     
-    def __init__(self, queue, shared):
+    def __init__(self, queue, shared, paused):
         
         Process.__init__(self)
         self.daemon = True
         
         self.queue = queue
         self.shared = shared
+        self.paused = paused
         
     def run(self):
         
@@ -41,7 +42,7 @@ class MainThread(Process):
         seasonStage = "mid"
         
         weatherOptions = ["clear", "clear", "clear", "clear", "cloudy", "cloudy", "overcast", "rain", "rain", "storm"]
-        weather = "clear"
+        weather = choice(weatherOptions)
         self.shared[1] = weatherOptions.index(weather)
         
         while True:
@@ -72,7 +73,11 @@ class MainThread(Process):
             
             self.shared[0] = time
             self.shared[1] = weatherOptions.index(weather)
+            self.queue.put(QueueItem("cont"))
+            self.paused[0] = 1
             sleep(0.05)
+            while self.paused[0] == 1:
+                pass
 
 ##Functions
 def run(tk):
@@ -83,36 +88,46 @@ def run(tk):
     queue = Queue()
     
     shared = Array('i', [0, 0])
+    paused = Array('i', [0, 0])
     
-    main = MainThread(queue, shared)
+    main = MainThread(queue, shared, paused)
     main.start()
-    clouds = Clouds(queue, shared)
+    clouds = Clouds(queue, shared, paused)
     clouds.start()
     
     while True:
         
-        try:
-            task = queue.get(block = False)
-        except:
-            pass
-        else:
-            try:
-                if task.oper == "create":
-                    object = s._create(task.object, task.coords, task.kw)
-                    task.pipeSend.send(object)
-                elif task.oper == "config":
-                    s.config(task.kw)
-                elif task.oper == "coords":
-                    s.coords(task.object, task.coords)
-                elif task.oper == "itemconfig":
-                    s.itemconfig(task.object, task.kw)
-            except:
-                break
+        contA = []
         
+        while len(contA) < 2:
+        
+            try:
+                task = queue.get(block = False)
+            except:
+                pass
+            else:
+                try:
+                    if task.oper == "create":
+                        object = s._create(task.object, task.coords, task.kw)
+                        task.pipeSend.send(object)
+                    elif task.oper == "config":
+                        s.config(task.kw)
+                    elif task.oper == "coords":
+                        s.coords(task.object, task.coords)
+                    elif task.oper == "itemconfig":
+                        s.itemconfig(task.object, task.kw)
+                    elif task.oper == "cont":
+                        contA.append(1)
+                except:
+                    break
+            
         try:        
-            tk.update()
+            s.update()
         except:
             break
+            
+        paused[0] = 0
+        paused[1] = 0
         
 #Runs the program if not from menu
 if __name__ == "__main__":
