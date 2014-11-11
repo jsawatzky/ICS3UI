@@ -24,11 +24,11 @@ class Clouds(Process):
         
     def resetCloud(self, cloud):
         
-        width = randint(50, 150)
+        width = randint(100, 175)
         cloud['x'] = cloud['x']%800 - 800
-        cloud['y'] = randint(50, 100)
+        cloud['y'] = randint(-25, 0)
         cloud['width'] = width
-        cloud['speed'] = randint(1, 4)
+        cloud['speed'] = randint(1, 3)
         
         return cloud
         
@@ -55,23 +55,27 @@ class Clouds(Process):
         
     def run(self):
         
+        while self.paused[1] == 1:
+                pass
+        
         self.colors = {'clear': "#FFFFFF", 'cloudy': "#FFFFFF", 'overcast': "#969696", 'rain': "#646464", 'storm': "#323232"}
         
         self.objects = []
         for i in range(10):
-            x = randint(900, 1500)
+            x = randint(1700, 3100)
             y = randint(0, 25)
-            width = randint(100, 200)
+            width = randint(100, 250)
             self.objects.append({
                                  'x': x,
                                  'y': y,
                                  'width': width,
-                                 'speed': randint(1, 4),
+                                 'speed': randint(1, 3),
                                  'color': "#FFFFFF",
                                  'objects': []})
             for o in range(3):
                 x = randint(int(-width/2)+10, int(width/2)-10)
-                y = randint(-25, 0)
+                y = randint(-5, 20)
+                print(2)
                 queueItem = QueueItem("create", 'oval', x, y, x, y, fill = "#FFFFFF", outline = "#FFFFFF")
                 self.queue.put(queueItem)
                 object = None
@@ -80,9 +84,14 @@ class Clouds(Process):
                 self.objects[i]['objects'].append({
                                                    'x': x,
                                                    'y': y,
-                                                   'width': randint(75, 125),
+                                                   'width': randint(100, 175),
                                                    'height': randint(25, 50),
                                                    'object': object})
+        
+        self.queue.put(QueueItem("cont"))   
+        self.paused[1] = 1
+        while self.paused[1] == 1:
+                pass
         
         while True:
             self.update()

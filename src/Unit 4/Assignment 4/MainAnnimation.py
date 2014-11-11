@@ -28,6 +28,8 @@ class MainThread(Process):
         
     def run(self):
         
+        self.paused[1] = 1
+        
         sky = Sky(self.queue)
         sun = Sun(self.queue, 300, 100)
         moon = Moon(self.queue, 300, 100)
@@ -44,6 +46,12 @@ class MainThread(Process):
         weatherOptions = ["clear", "clear", "clear", "clear", "cloudy", "cloudy", "overcast", "rain", "rain", "storm"]
         weather = choice(weatherOptions)
         self.shared[1] = weatherOptions.index(weather)
+        
+        self.queue.put(QueueItem("cont"))   
+        self.paused[0] = 1
+        self.paused[1] = 0
+        while self.paused[0] == 1:
+                pass
         
         while True:
             

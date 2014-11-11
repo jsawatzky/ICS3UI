@@ -19,6 +19,7 @@ class Ground():
         colors['winter'] ="#FFFFFF"
         
         self.colors = colors
+        print(1)
         queueItem = QueueItem("create", 'rectangle', 0, 400, 800, 800, fill = colors['spring'], outline = colors['spring'])
         self.queue.put(queueItem)
         

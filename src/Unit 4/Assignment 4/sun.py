@@ -12,6 +12,7 @@ class Sun():
         self.k = peak
         self.h = 400
         self.a = (startY - self.k)/(self.h**2)
+        print(1)
         queueItem = QueueItem("create", 'oval', -75, startY-75, 75, startY+75, fill = "yellow", outline = "yellow")
         self.queue.put(queueItem)
         
