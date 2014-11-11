@@ -6,8 +6,7 @@ Created on Oct 29, 2014
 from tkinter import *
 from utilities import *
 from random import choice
-from threading import Thread
-from queue import Queue, Empty
+from multiprocessing import *
 from time import sleep
 
 from sky import Sky
@@ -16,24 +15,25 @@ from moon import Moon
 from clouds import Clouds
 from ground import Ground
 
-class MainThread(Thread):
+class MainThread(Process):
     
-    def __init__(self, queue):
+    def __init__(self, queue, shared):
         
-        Thread.__init__(self)
+        Process.__init__(self)
         self.daemon = True
         
         self.queue = queue
+        self.shared = shared
         
     def run(self):
         
         sky = Sky(self.queue)
         sun = Sun(self.queue, 300, 100)
         moon = Moon(self.queue, 300, 100)
-        #clouds = Clouds(self.queue, self)
         ground = Ground(self.queue)
         
-        self.time = 75
+        time = 75
+        self.shared[0] = time
         day = 0
         seasons = ["spring", "summer", "fall", "winter"]
         season = "spring"
@@ -42,21 +42,22 @@ class MainThread(Thread):
         
         weatherOptions = ["clear", "clear", "clear", "clear", "cloudy", "cloudy", "overcast", "rain", "rain", "storm"]
         weather = "clear"
+        self.shared[1] = weatherOptions.index(weather)
         
         while True:
             
-            sky.update(self.time)
-            sun.update(self.time)
-            moon.update(self.time, day)
-            ground.update(self.time, season, seasonStage, seasons)
+            sky.update(time)
+            sun.update(time)
+            moon.update(time, day)
+            ground.update(time, season, seasonStage, seasons)
             
             sun.draw()
             moon.draw()
             ground.draw()
                    
-            self.time += 1
-            if self.time > 1600:
-                self.time = 0
+            time += 3
+            if time > 1600:
+                time = 0
                 day += 1
                 if day > 15:
                     day = 0
@@ -67,12 +68,11 @@ class MainThread(Thread):
                     weather = "rain"
                 else: 
                     weather = choice(weatherOptions)
+                print(weather)
             
-            sleep(0.01)
-            
-    def getTime(self):
-        
-        return self.time
+            self.shared[0] = time
+            self.shared[1] = weatherOptions.index(weather)
+            sleep(0.05)
 
 ##Functions
 def run(tk):
@@ -82,20 +82,24 @@ def run(tk):
     
     queue = Queue()
     
-    main = MainThread(queue)
+    shared = Array('i', [0, 0])
+    
+    main = MainThread(queue, shared)
     main.start()
+    clouds = Clouds(queue, shared)
+    clouds.start()
     
     while True:
         
         try:
             task = queue.get(block = False)
-        except Empty:
+        except:
             pass
         else:
             try:
                 if task.oper == "create":
                     object = s._create(task.object, task.coords, task.kw)
-                    task.returnObject(object)
+                    task.pipeSend.send(object)
                 elif task.oper == "config":
                     s.config(task.kw)
                 elif task.oper == "coords":

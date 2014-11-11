@@ -7,6 +7,7 @@ Created on Sep 29, 2014
 from tkinter import *
 from threading import Timer
 from ctypes.wintypes import RGB
+from multiprocessing import Pipe
         
 class Boolean():
     
@@ -51,18 +52,9 @@ class QueueItem():
         
         self.oper = oper
         self.object = object
+        self.pipeSend, self.pipeRecv = Pipe()
         self.coords = coords
         self.kw = kw
-        
-        self.objectReturnable = None
-        
-    def returnObject(self, object):
-        
-        self.objectReturnable = object
-        
-    def getObject(self):
-        
-        return self.objectReturnable
         
 NUMERALS = '0123456789abcdefABCDEF'
 HEXDEC = {v: int(v, 16) for v in (x+y for x in NUMERALS for y in NUMERALS)}

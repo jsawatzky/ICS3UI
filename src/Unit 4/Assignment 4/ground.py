@@ -24,7 +24,7 @@ class Ground():
         
         self.object = None
         while self.object == None:
-            self.object = queueItem.getObject()
+            self.object = queueItem.pipeRecv.recv()
         
     def update(self, time, season, seasonStage, seasons):
         

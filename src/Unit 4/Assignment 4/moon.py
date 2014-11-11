@@ -25,9 +25,9 @@ class Moon():
         self.back2 = None
         self.front = None
         while self.back1 == None or self.back2 == None or self.front == None:
-            self.back1 = queueItemBack1.getObject()
-            self.back2 = queueItemBack2.getObject()
-            self.front = queueItemFront.getObject()
+            self.back1 = queueItemBack1.pipeRecv.recv()
+            self.back2 = queueItemBack2.pipeRecv.recv()
+            self.front = queueItemFront.pipeRecv.recv()
         
     def update(self, time, day):
         if time < 100:

@@ -17,8 +17,8 @@ class Sun():
         
         self.object = None
         while self.object == None:
-            self.object = queueItem.getObject()
-        
+            self.object = queueItem.pipeRecv.recv()
+            
     def update(self, time):
         if time > 1525:
             time -= 1600
