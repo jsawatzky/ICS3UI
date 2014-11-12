@@ -13,7 +13,6 @@ class Moon():
         self.h = 400
         self.a = (startY - self.k)/(self.h**2)
         
-        print(1)
         queueItemBack1 = QueueItem("create", 'arc', 0, 0, 0, 0, fill = "#0e1637", outline = "#0e1637", start = 270, extent = 180)
         queueItemBack2 = QueueItem("create", 'arc', 0, 0, 0, 0, fill = "#0e1637", outline = "#0e1637", start = 90, extent = 180)
         queueItemFront = QueueItem("create", 'oval', 0, 0, 0, 0, fill = "#CCCCCC", outline = "#CCCCCC")

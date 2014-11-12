@@ -9,6 +9,7 @@ from multiprocessing import *
 from time import sleep
 
 from sky import Sky
+from stars import Stars
 from sun import Sun
 from moon import Moon
 from clouds import Clouds
@@ -26,6 +27,9 @@ class MainThread(Process):
         self.paused = paused
         
     def run(self):
+        
+        while self.paused[0] == 1:
+            pass
         
         self.paused[1] = 1
         
@@ -95,8 +99,10 @@ def run(tk):
     queue = Queue()
     
     shared = Array('i', [0, 0])
-    paused = Array('i', [0, 0])
+    paused = Array('i', [0, 0, 0])
     
+    stars = Stars(queue, shared, paused)
+    stars.start()
     main = MainThread(queue, shared, paused)
     main.start()
     clouds = Clouds(queue, shared, paused)
@@ -106,7 +112,7 @@ def run(tk):
         
         contA = []
         
-        while len(contA) < 2:
+        while len(contA) < 3:
         
             try:
                 task = queue.get(block = False)
@@ -126,6 +132,7 @@ def run(tk):
                     elif task.oper == "cont":
                         contA.append(1)
                 except:
+                    raise
                     break
             
         try:        
@@ -135,6 +142,7 @@ def run(tk):
             
         paused[0] = 0
         paused[1] = 0
+        paused[2] = 0
         
 #Runs the program if not from menu
 if __name__ == "__main__":
