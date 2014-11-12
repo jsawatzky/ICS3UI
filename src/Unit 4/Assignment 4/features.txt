@@ -1,7 +1,8 @@
 - Sun/Moon cycle (done)
 - Changing sky (done)
 - Changing ground (done)
-- Clouds
+- Clouds (done)
+- Stars
 - Rain/Snow
 - Meteors
 - Flowers

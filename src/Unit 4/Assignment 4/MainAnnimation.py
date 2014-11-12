@@ -1,6 +1,5 @@
 '''
 Created on Oct 29, 2014
-
 @author: Jacob Sawatzky
 '''
 from tkinter import *
