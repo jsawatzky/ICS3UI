@@ -13,10 +13,9 @@ class Clouds(Process):
     def __init__(self, queue, shared, paused):
         
         Process.__init__(self)
-        self.daemon = True
+        self._daemonic = True
         
         self.queue = queue
-        
         self.shared = shared
         self.paused = paused
         
@@ -70,7 +69,7 @@ class Clouds(Process):
     def run(self):
         
         while self.paused[1] == 1:
-                pass
+            pass
         
         self.colors = {'clear': "#FFFFFF", 'cloudy': "#FFFFFF", 'overcast': "#969696", 'rain': "#646464", 'storm': "#323232"}
         self.oldWeather = "clear"

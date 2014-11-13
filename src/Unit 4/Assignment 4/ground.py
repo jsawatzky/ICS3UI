@@ -28,12 +28,20 @@ class Ground():
         
     def update(self, time, season, seasonStage, seasons):
         
-        if seasonStage == "late":
-            self.color = getColor(self.colors[season], getColor(self.colors[season], self.colors[seasons[(seasons.index(season)+1)%4]], 0, 2, 1), 0, 1600, time)
-        elif seasonStage == "early":
-            self.color = getColor(getColor(self.colors[season], self.colors[seasons[(seasons.index(season)+1)%4]], 0, 2, 1), self.colors[season], 0, 1600, time)
+        if season != "winter":
+            if seasonStage == "late" and season != "fall":
+                self.color = getColor(self.colors[season], getColor(self.colors[season], self.colors[seasons[(seasons.index(season)+1)%4]], 0, 2, 1), 0, 1600, time)
+            elif seasonStage == "early" and season != "spring":
+                self.color = getColor(getColor(self.colors[season], self.colors[seasons[(seasons.index(season)-1)%4]], 0, 2, 1), self.colors[season], 0, 1600, time)
+            else:
+                self.color = self.colors[season]
         else:
-            self.color = self.colors[season]
+            if seasonStage == "late":
+                self.color = getColor(self.colors["winter"], self.colors["spring"], 0, 1600, time)
+            elif seasonStage == "early":
+                self.color = getColor(self.colors["fall"], self.colors["winter"], 0, 1600, time)
+            else:
+                self.color = self.colors["winter"]
             
         self.color = darken(self.color, time)
             

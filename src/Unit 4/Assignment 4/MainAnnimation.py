@@ -12,6 +12,7 @@ from sky import Sky
 from stars import Stars
 from sun import Sun
 from moon import Moon
+from rain import Rain
 from clouds import Clouds
 from ground import Ground
 
@@ -20,7 +21,7 @@ class MainThread(Process):
     def __init__(self, queue, shared, paused):
         
         Process.__init__(self)
-        self.daemon = True
+        self._daemonic = True
         
         self.queue = queue
         self.shared = shared
@@ -30,8 +31,6 @@ class MainThread(Process):
         
         while self.paused[0] == 1:
             pass
-        
-        self.paused[1] = 1
         
         sky = Sky(self.queue)
         sun = Sun(self.queue, 300, 100)
@@ -43,6 +42,7 @@ class MainThread(Process):
         day = 0
         seasons = ["spring", "summer", "fall", "winter"]
         season = "spring"
+        self.shared[2] = seasons.index(season)
         seasonStages = ["early", "mid", "mid", "late"]
         seasonStage = "mid"
         
@@ -52,9 +52,9 @@ class MainThread(Process):
         
         self.queue.put(QueueItem("cont"))   
         self.paused[0] = 1
-        self.paused[1] = 0
+        self.paused[3] = 0
         while self.paused[0] == 1:
-                pass
+            pass
         
         while True:
             
@@ -74,6 +74,7 @@ class MainThread(Process):
                 if day > 15:
                     day = 0
                 season = seasons[int(day/4)]
+                self.shared[2] = seasons.index(season)
                 seasonStage = seasonStages[day%len(seasonStages)]
                 
                 if season == "winter" and seasonStage == "early":
@@ -98,21 +99,27 @@ def run(tk):
     
     queue = Queue()
     
-    shared = Array('i', [0, 0])
-    paused = Array('i', [0, 0, 0])
+    shared = Array('i', [0, 0, 0])
+    paused = Array('i', [1, 1, 0, 1])
     
     stars = Stars(queue, shared, paused)
     stars.start()
+    sleep(0.01)
     main = MainThread(queue, shared, paused)
     main.start()
+    sleep(0.01)
+    rain = Rain(queue, shared, paused)
+    rain.start()
+    sleep(0.01)
     clouds = Clouds(queue, shared, paused)
     clouds.start()
+    
     
     while True:
         
         contA = []
         
-        while len(contA) < 3:
+        while len(contA) < 4:
         
             try:
                 task = queue.get(block = False)
@@ -132,7 +139,6 @@ def run(tk):
                     elif task.oper == "cont":
                         contA.append(1)
                 except:
-                    raise
                     break
             
         try:        
@@ -143,6 +149,7 @@ def run(tk):
         paused[0] = 0
         paused[1] = 0
         paused[2] = 0
+        paused[3] = 0
         
 #Runs the program if not from menu
 if __name__ == "__main__":

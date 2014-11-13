@@ -15,7 +15,7 @@ class Stars(Process):
     def __init__(self, queue, shared, paused):
         
         Process.__init__(self)
-        self.daemon = True
+        self._daemonic = True
         
         self.queue = queue
         self.shared = shared
@@ -23,20 +23,16 @@ class Stars(Process):
         
     def update(self):
         
-        if self.shared[0] in range(850, 950):
-            i = (self.shared[0]-850) * 2
-            self.queue.put(QueueItem("itemconfig", self.stars[i]['object'], state = NORMAL))
-            i += 1
-            self.queue.put(QueueItem("itemconfig", self.stars[i]['object'], state = HIDDEN))
-        elif self.shared[0] in range(1450, 1550):
-            i = (self.shared[0]-1450) * 2
-            self.queue.put(QueueItem("itemconfig", self.stars[i]['object'], state = HIDDEN))
-            i += 1
-            self.queue.put(QueueItem("itemconfig", self.stars[i]['object'], state = HIDDEN))
+        if self.shared[0] in range(850, 1000):
+            n = int(self.shared[0]/3 - 284) * 4
+            for i in range(n, n+4):
+                self.queue.put(QueueItem("itemconfig", self.stars[i]['object'], state = NORMAL))
+        elif self.shared[0] in range(1400, 1551):
+            n = int(self.shared[0]/3-467) * 4
+            for i in range(n, n+4):
+                self.queue.put(QueueItem("itemconfig", self.stars[i]['object'], state = HIDDEN))
         
     def run(self):
-        
-        self.paused[0] = 1
         
         self.stars = []
         for i in range(200):
@@ -44,12 +40,18 @@ class Stars(Process):
             self.stars.append({})
             self.stars[i]['x'] = randint(0, 800)
             self.stars[i]['y'] = randint(0, 400)
-            self.stars[i]['size'] = randint(1, 3)
+            self.stars[i]['size'] = randint(1, 2)
             queueItem = QueueItem("create", 'oval', self.stars[i]['x']-self.stars[i]['size'], self.stars[i]['y']-self.stars[i]['size'], self.stars[i]['x']+self.stars[i]['size'], self.stars[i]['y']+self.stars[i]['size'], fill = "white", outline = "white", state = HIDDEN)
             self.queue.put(queueItem)
             self.stars[i]['object'] = None
             while self.stars[i]['object'] == None:
                 self.stars[i]['object'] = queueItem.pipeRecv.recv()
+                
+        self.queue.put(QueueItem("cont"))   
+        self.paused[2] = 1
+        self.paused[0] = 0
+        while self.paused[2] == 1:
+            pass
         
         while True:
             self.update()

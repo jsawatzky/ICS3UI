@@ -2,10 +2,10 @@
 - Changing sky (done)
 - Changing ground (done)
 - Clouds (done)
-- Stars
-- Rain/Snow
-- Meteors
-- Flowers
+- Stars (done)
+- Rain/Snow (done)
+- Meteors (not doing)
+- Flowers (not doing)
 - Tree
 - Falling leaves
-- House (maybe)
+- House (not doing)
