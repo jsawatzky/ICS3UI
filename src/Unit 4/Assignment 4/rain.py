@@ -69,7 +69,6 @@ class Rain(Process):
             self.rain[i]['size'] = size
             self.rain[i]['speed'] = randint(4, 6)
             weather = self.weatherOptions[self.shared[1]]
-            print(weather)
             if weather == "rain" or weather == "storm":
                 queueItem = QueueItem("create", 'oval', x-size, y-size, x+size, y+size, fill = color, outline = color, state = NORMAL)
             else:

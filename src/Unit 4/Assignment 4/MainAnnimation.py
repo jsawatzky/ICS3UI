@@ -81,7 +81,6 @@ class MainThread(Process):
                     weather = "rain"
                 else: 
                     weather = choice(weatherOptions)
-                print(weather)
             
             self.shared[0] = time
             self.shared[1] = weatherOptions.index(weather)
@@ -96,6 +95,9 @@ def run(tk):
     
     s = Canvas(tk, width =  800, height = 800, background = "blue")
     s.grid(row = 0, column = 0)
+    
+    pond = PhotoImage(file = "pond.gif")
+    pondO = None
     
     queue = Queue()
     
@@ -140,6 +142,9 @@ def run(tk):
                         contA.append(1)
                 except:
                     break
+                
+        if pondO == None:
+            pondO = s.create_image(150, 700, image = pond)
             
         try:        
             s.update()
