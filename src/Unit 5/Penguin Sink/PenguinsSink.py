@@ -1,7 +1,7 @@
 from tkinter import *
 from time import sleep
 from random import randint
-from math import sin, radians
+from math import sin
 
 tk = Tk()
 s = Canvas(tk, width = 800, height = 800, bg = "blue")
@@ -47,12 +47,12 @@ def run(numPenguins):
     
     frame = 0
 
-    while len(penguins) > 0:
+    while len(penguins) > 0 or len(fallingPenguins) > 0:
         
         s.coords(wave1, 400+frame%800, 400)
         s.coords(wave2, -400+frame%800, 400)
         
-        yChange = sin(frame/3)
+        yChange = sin(frame/3)*3
         
         s.coords(iceberg, 100, 350+yChange, 700, 450+yChange)
         
@@ -63,9 +63,9 @@ def run(numPenguins):
                     penguins[i2][2] = (penguins[i2][2]-1) % 2
                     
             if penguins[i][2] == 1:
-                penguins[i][1] += 1
+                penguins[i][1] += 2
             else:
-                penguins[i][1] -= 1
+                penguins[i][1] -= 2
             s.coords(penguins[i][0], penguins[i][1], 313+yChange)
             s.itemconfig(penguins[i][0], image = penguinImages[penguins[i][2]])
             if penguins[i][1] < 84 or penguins[i][1] > 716:
@@ -78,11 +78,17 @@ def run(numPenguins):
         toRemove = []
         
         for penguin in fallingPenguins:
-            penguin[3] += 3
+            penguin[3] += 5
             s.coords(penguin[0], penguin[1], penguin[3])
+            if penguin[3] > 450:
+                toRemove.append(penguin)
+                
+        for i in toRemove:
+            fallingPenguins.remove(i)
+        toRemove = []
         
         s.update()
         sleep(0.05)
         frame += 1
     
-run(10)
+run(15)
