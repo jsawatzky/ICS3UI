@@ -1,0 +1,11 @@
+- Sun/Moon cycle (done)
+- Changing sky (done)
+- Changing ground (done)
+- Clouds (done)
+- Stars (done)
+- Rain/Snow (done)
+- Meteors (not doing)
+- Flowers (not doing)
+- Tree
+- Falling leaves
+- House (not doing)
