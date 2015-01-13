@@ -16,12 +16,22 @@ s.pack()
 
 #INITIALIZERS
 def initializeVariables():
-    global lives, difficulty, score, paused, mouse, keys
+    global lives, difficulty, score, paused, mouse, keys, quitting
+    global bullets, rockets
     
     lives = 3
     difficulty = "easy"
     score = 0
     paused = False
+    quitting = False
+    
+    availibleBullets = []
+    for i in range(100):
+        bullets.append((s.create_line(-100, -100, -100, -100, fill = "yellow", outline = "yellow"),
+                        s.create_line(-100, -100, -100, -100, fill = "yellow", outline = "yellow"),
+                        -100, -100))
+    bullets = []
+    rockets = []
     
     keys = {}
     mouse = {'loc': (0, 0), 'left': False, 'right': False}
@@ -81,6 +91,11 @@ def keyUp(event):
     global keys
     
     keys[event.keysym] = False
+    
+def windowClose():
+    global quitting
+    
+    quitting = True
         
 #UPDATERS
 def updateBackground():
@@ -103,7 +118,7 @@ def updateBackground():
     bgSpeed += 0.00027777777777
     
 def updatePlayer():
-    global player, mouse, keys
+    global player, mouse, keys, lastBullet, lastRocket
     
     xSpeed = 0
     ySpeed = 0
@@ -130,6 +145,9 @@ def updatePlayer():
         y = 0
     elif y + 50 > 800:
         y = 750
+        
+    if mouse['left'] == True:
+        
     
     s.coords(playerO, x, y)
     
@@ -159,6 +177,10 @@ def runGame():
         
         root.update()
         
+        if quitting == True:
+            root.destroy()
+            break
+        
         endTime = int(str(datetime.now().time())[9:])
         runTime = endTime - startTime
         if runTime < 0:
@@ -175,6 +197,7 @@ s.bind("<ButtonRelease-3>", rightMouseDown)
 s.bind("<Motion>", mouseMove)
 root.bind("<Key>", keyDown)
 root.bind("<KeyRelease>", keyUp)
+root.protocol("WM_DELETE_WINDOW", windowClose)
 
 root.after(0, runGame)
 
