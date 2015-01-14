@@ -4,6 +4,7 @@ Created on Jan 11, 2015
 @author: Jacob
 '''
 from tkinter import *
+from tkinter.messagebox import *
 from random import *
 from time import sleep
 from datetime import *
@@ -16,14 +17,14 @@ s.pack()
 
 #INITIALIZERS
 def initializeVariables():
-    global lives, difficulty, score, paused, mouse, keys, quitting
+    global lives, difficulty, score, paused, mouse, keys, exiting
     global bullets, rockets
     
     lives = 3
     difficulty = "easy"
     score = 0
     paused = False
-    quitting = False
+    exiting = False
     
     availibleBullets = []
     for i in range(100):
@@ -64,30 +65,32 @@ def keyDown(event):
     global keys
     
     if event.keysym == "w":
-        player.ySpeed -= 8
+        player.forward = True
     if event.keysym == "a":
-        player.xSpeed -= 8
+        player.right = True
     if event.keysym == "s":
-        player.ySpeed += 8
+        player.backward = True
     if event.keysym == "d":
-        player.xSpeed += 8
+        player.left = True
     
 def keyUp(event):
     global keys
     
     if event.keysym == "w":
-        player.ySpeed += 8
+        player.forward = False
     if event.keysym == "a":
-        player.xSpeed += 8
+        player.right = False
     if event.keysym == "s":
-        player.ySpeed -= 8
+        player.backward = False
     if event.keysym == "d":
-        player.xSpeed -= 8
+        player.left = False
     
 def windowClose():
-    global quitting
+    global exiting
     
-    quitting = True
+    if askyesno("Quit", "Are you sure you want to quit?"):
+        
+        exiting = True
     
 class Background():
     
@@ -132,6 +135,11 @@ class Player():
         self.x = 300
         self.y = 700
         
+        self.forward = False
+        self.backward = False
+        self.right = False
+        self.left = False
+        
         self.xSpeed = 0
         self.ySpeed = 0
         
@@ -140,11 +148,24 @@ class Player():
         for i in range(100):
             self.availibleBullets.append(Bullet())
         self.currentRockets = []
+        
         self.availibleRockets = []
-        for i in range(100):
+        for i in range(50):
             self.availibleRockets.append(Rocket())
         
     def update(self):
+        
+        self.xSpeed = 0
+        self.ySpeed = 0
+        
+        if self.forward == True:
+            self.ySpeed -= 8
+        if self.backward == True:
+            self.ySpeed += 8
+        if self.right == True:
+            self.xSpeed -= 8
+        if self.left == True:
+            self.xSpeed += 8
         
         self.x += self.xSpeed
         self.y += self.ySpeed
@@ -164,13 +185,11 @@ class Player():
             if bullet.update() == True:
                 self.availibleBullets.append(bullet)
                 self.currentBullets.remove(bullet)
-                print(1)
                 
         for rocket in self.currentRockets:
             if rocket.update() == True:
-                self.availibleRockets.append(bullet)
-                self.currentRockets.remove(bullet)
-                print(2)
+                self.availibleRockets.append(rocket)
+                self.currentRockets.remove(rocket)
         
     def fireBullet(self):
         
@@ -207,7 +226,7 @@ class Bullet():
         s.coords(self.object1, self.x - 14, self.y - 4, self.x - 14, self.y + 4)
         s.coords(self.object2, self.x + 14, self.y - 4, self.x + 14, self.y + 4)
 
-        if self.y + 4 == 0:
+        if self.y + 4 < 0:
             return True
         else:
             return False
@@ -229,7 +248,7 @@ class Rocket():
         
         s.coords(self.object1, self.x, self.y - 4, self.x, self.y + 4)
 
-        if self.y + 4 == 0:
+        if self.y + 4 < 0:
             return True
         else:
             return False
@@ -260,7 +279,7 @@ def runGame():
         
         root.update()
         
-        if quitting == True:
+        if exiting == True:
             root.destroy()
             break
         
@@ -276,7 +295,7 @@ def runGame():
 s.bind("<Button-1>", leftMouseDown)
 s.bind("<ButtonRelease-1>", leftMouseUp)
 s.bind("<Button-3>", rightMouseDown)
-s.bind("<ButtonRelease-3>", rightMouseDown)
+s.bind("<ButtonRelease-3>", rightMouseUp)
 s.bind("<Motion>", mouseMove)
 root.bind("<Key>", keyDown)
 root.bind("<KeyRelease>", keyUp)
