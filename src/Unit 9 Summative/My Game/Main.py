@@ -27,55 +27,33 @@ def initializeVariables():
     
     availibleBullets = []
     for i in range(100):
-        bullets.append((s.create_line(-100, -100, -100, -100, fill = "yellow", outline = "yellow"),
-                        s.create_line(-100, -100, -100, -100, fill = "yellow", outline = "yellow"),
+        availibleBullets.append((s.create_line(-100, -100, -100, -100, fill = "yellow"),
+                        s.create_line(-100, -100, -100, -100, fill = "yellow"),
                         -100, -100))
     bullets = []
     rockets = []
     
     keys = {}
     mouse = {'loc': (0, 0), 'left': False, 'right': False}
-
-def initializeBackground():
-    global stars, bgSpeed
-    
-    stars = []
-    bgSpeed = 2
-    
-    for i in range(50):
-        
-        x = randint(0, 600)
-        y = randint(0, 800)
-        size = randint(2, 3)
-        stars.append((s.create_oval(x-size, y-size, x+size, y+size, fill = "white", outline = "white"), (x, y, size)))
-        
-def initializePlayer():
-    global player, shipImg
-    
-    shipImg = PhotoImage(file = "ship.gif")
-    
-    player = (s.create_image(300, 700, image = shipImg), 300, 700)
         
 #HANDLERS
 def leftMouseDown(event):
-    global mouse
     
-    mouse['left'] = True
+    player.fireBullet()
     
 def leftMouseUp(event):
-    global mouse
     
-    mouse['left'] = False
+    pass
     
 def rightMouseDown(event):
     global mouse
     
-    mouse['right'] = True
+    player.fireRocket()
     
 def rightMouseUp(event):
     global mouse
     
-    mouse['right'] = False
+    pass
     
 def mouseMove(event):
     global mouse
@@ -85,95 +63,200 @@ def mouseMove(event):
 def keyDown(event):
     global keys
     
-    keys[event.keysym] = True
+    if event.keysym == "w":
+        player.ySpeed -= 8
+    if event.keysym == "a":
+        player.xSpeed -= 8
+    if event.keysym == "s":
+        player.ySpeed += 8
+    if event.keysym == "d":
+        player.xSpeed += 8
     
 def keyUp(event):
     global keys
     
-    keys[event.keysym] = False
+    if event.keysym == "w":
+        player.ySpeed += 8
+    if event.keysym == "a":
+        player.xSpeed += 8
+    if event.keysym == "s":
+        player.ySpeed -= 8
+    if event.keysym == "d":
+        player.xSpeed -= 8
     
 def windowClose():
     global quitting
     
     quitting = True
-        
-#UPDATERS
-def updateBackground():
-    global stars, bgSpeed
     
-    for i in range(len(stars)):
+class Background():
+    
+    def __init__(self):
         
-        star, (x, y, size) = stars[i]
+        self.stars = []
+        self.bgSpeed = 4
         
-        y += bgSpeed
-        if y > 800+size:
+        for i in range(50):
+            
             x = randint(0, 600)
+            y = randint(0, 800)
             size = randint(2, 3)
-            y = 0 - size
+            self.stars.append((s.create_oval(x-size, y-size, x+size, y+size, fill = "white", outline = "white"), (x, y, size)))
             
-        s.coords(star, x-size, y-size, x+size, y+size)
+    def update(self):
+        
+        for i in range(len(self.stars)):
+        
+            star, (x, y, size) = self.stars[i]
             
-        stars[i] = (star, (x, y, size))
+            y += self.bgSpeed
+            if y > 800+size:
+                x = randint(0, 600)
+                size = randint(2, 3)
+                y = 0 - size
+                
+            s.coords(star, x-size, y-size, x+size, y+size)
+                
+            self.stars[i] = (star, (x, y, size))
+            
+        self.bgSpeed += 0.00027777777777
         
-    bgSpeed += 0.00027777777777
+class Player():
     
-def updatePlayer():
-    global player, mouse, keys, lastBullet, lastRocket
-    
-    xSpeed = 0
-    ySpeed = 0
-    
-    if keys.get('a') == True:
-        xSpeed -= 8
-    if keys.get('d') == True:
-        xSpeed += 8
-    if keys.get('w') == True:
-        ySpeed -= 8
-    if keys.get('s') == True:
-        ySpeed += 8
+    def __init__(self):
         
-    playerO, x, y = player
+        self.img = PhotoImage(file = "ship.gif")
     
-    x += xSpeed
-    y += ySpeed
-    
-    if x - 24 < 0:
-        x = 24
-    elif x + 24 > 600:
-        x = 576
-    if y - 50 < 0:
-        y = 0
-    elif y + 50 > 800:
-        y = 750
+        self.object = s.create_image(300, 700, image = self.img)
         
-    if mouse['left'] == True:
+        self.x = 300
+        self.y = 700
         
+        self.xSpeed = 0
+        self.ySpeed = 0
+        
+        self.currentBullets = []
+        self.availibleBullets = []
+        for i in range(100):
+            self.availibleBullets.append(Bullet())
+        self.currentRockets = []
+        self.availibleRockets = []
+        for i in range(100):
+            self.availibleRockets.append(Rocket())
+        
+    def update(self):
+        
+        self.x += self.xSpeed
+        self.y += self.ySpeed
+        
+        if self.x - 24 < 0:
+            self.x = 24
+        elif self.x + 24 > 600:
+            self.x = 576
+        if self.y - 50 < 0:
+            self.y = 0
+        elif self.y + 50 > 800:
+            self.y = 750
+        
+        s.coords(self.object, self.x, self.y)
+        
+        for bullet in self.currentBullets:
+            if bullet.update() == True:
+                self.availibleBullets.append(bullet)
+                self.currentBullets.remove(bullet)
+                print(1)
+                
+        for rocket in self.currentRockets:
+            if rocket.update() == True:
+                self.availibleRockets.append(bullet)
+                self.currentRockets.remove(bullet)
+                print(2)
+        
+    def fireBullet(self):
+        
+        bullet = self.availibleBullets.pop()
+        
+        bullet.fire(self.x, self.y)
+        
+        self.currentBullets.append(bullet)
     
-    s.coords(playerO, x, y)
+    def fireRocket(self):
+        
+        rocket = self.availibleRockets.pop()
+        
+        rocket.fire(self.x, self.y)
+        
+        self.currentRockets.append(rocket)
     
-    player = (playerO, x, y)
+class Bullet():
+    
+    def __init__(self):
+        
+        self.object1 = s.create_line(0 , 0,0, 0, fill = "yellow")
+        self.object2 = s.create_line(0, 0, 0, 0, fill = "yellow")
+        
+    def fire(self, x, y):
+        
+        self.x = x
+        self.y = y
+        
+    def update(self):
+        
+        self.y -= 12
+        
+        s.coords(self.object1, self.x - 14, self.y - 4, self.x - 14, self.y + 4)
+        s.coords(self.object2, self.x + 14, self.y - 4, self.x + 14, self.y + 4)
 
+        if self.y + 4 == 0:
+            return True
+        else:
+            return False
+        
+class Rocket():
+    
+    def __init__(self):
+        
+        self.object1 = s.create_line(0 , 0,0, 0, fill = "yellow")
+        
+    def fire(self, x, y):
+        
+        self.x = x
+        self.y = y
+        
+    def update(self):
+        
+        self.y -= 12
+        
+        s.coords(self.object1, self.x, self.y - 4, self.x, self.y + 4)
+
+        if self.y + 4 == 0:
+            return True
+        else:
+            return False
+    
 #MAIN FUNCTION
 def runGame():
-    global lives, score, paused
+    global lives, score, paused, player
     
     initializeVariables()
-    initializeBackground()
+    background = Background()
     
     #DO MENU STUFF HERE
     
-    initializePlayer()
+    player = Player()
     scoreO = s.create_text(590, 10, text = "Score: " + str(score), font = "Times 15", fill = "white", anchor = NE)
     
     while lives > 0:
         
         startTime = int(str(datetime.now().time())[9:])
         
-        updateBackground()
-        updatePlayer()
+        if paused == False:
         
-        score += 0.3333333333
-        s.itemconfig(scoreO, text = "Score: " + str(round(score)))
+            background.update()
+            player.update()
+            
+            score += 0.3333333333
+            s.itemconfig(scoreO, text = "Score: " + str(round(score)))
         
         root.update()
         
