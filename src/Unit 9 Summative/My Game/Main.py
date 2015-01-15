@@ -5,6 +5,7 @@ Created on Jan 11, 2015
 '''
 from tkinter import *
 from tkinter.messagebox import *
+from tkinter.font import *
 from random import *
 from time import sleep
 from datetime import *
@@ -17,30 +18,82 @@ s.pack()
 
 #INITIALIZERS
 def initializeVariables():
-    global lives, difficulty, score, paused, mouse, keys, exiting
-    global bullets, rockets
+    global player, background, lives, difficulty, score, paused, mouse, keys, exiting
+    global buttons
     
-    lives = 3
     difficulty = "easy"
     score = 0
-    paused = False
+    paused = True
     exiting = False
     
-    availibleBullets = []
-    for i in range(100):
-        availibleBullets.append((s.create_line(-100, -100, -100, -100, fill = "yellow"),
-                        s.create_line(-100, -100, -100, -100, fill = "yellow"),
-                        -100, -100))
-    bullets = []
-    rockets = []
+    background = Background()
+    player = Player()
     
-    keys = {}
-    mouse = {'loc': (0, 0), 'left': False, 'right': False}
+    buttons = {}
+    buttons['start'] = Button(300, 400, 200, 100, startGame, text = "Start Game")
+    buttons['easy'] = Button(175, 500, 75, 50, lambda: setDifficulty("easy"), text = "Easy")
+    s.itemconfig(buttons['easy'].content1, fill = "green")
+    buttons['medium'] = Button(300, 500, 125, 50, lambda: setDifficulty("medium"), text = "Medium")
+    buttons['hard'] = Button(425, 500, 75, 50, lambda: setDifficulty("hard"), text = "Hard")
+    buttons['pause'] = Button(25, 25, 20, 20, pauseGame, image = "pause.gif")
+    buttons['resume'] = Button(300, 400, 200, 100, unpauseGame, text = "Resume")
+    
+    
+    
+def setDifficulty(diff):
+    global difficulty
+    
+    difficultly = diff
+    if diff == "easy":
+        s.itemconfig(buttons[diff].content1, fill = "green")
+        s.itemconfig(buttons['medium'].content1, fill = "white")
+        s.itemconfig(buttons['hard'].content1, fill = "white")
+    elif diff == "medium":
+        s.itemconfig(buttons['easy'].content1, fill = "white")
+        s.itemconfig(buttons['medium'].content1, fill = "green")
+        s.itemconfig(buttons['hard'].content1, fill = "white")
+    elif diff == "hard":
+        s.itemconfig(buttons['easy'].content1, fill = "white")
+        s.itemconfig(buttons['medium'].content1, fill = "white")
+        s.itemconfig(buttons['hard'].content1, fill = "green")
+    
+def startGame():
+    global paused
+    
+    paused = False
+    buttons['start'].deactivate()
+    buttons['easy'].deactivate()
+    buttons['medium'].deactivate()
+    buttons['hard'].deactivate()
+    buttons['pause'].activate()
+    
+def pauseGame():
+    global paused 
+    
+    paused = True
+    buttons['pause'].deactivate()
+    buttons['resume'].activate()
+    
+def unpauseGame():
+    global paused
+    
+    paused = False
+    buttons['resume'].deactivate()
+    buttons['pause'].activate()
         
 #HANDLERS
 def leftMouseDown(event):
     
-    player.fireBullet()
+    if paused == False:
+        player.fireBullet()
+    
+    for button in buttons.values():
+        if button.active:
+            if button.isOver(event.x, event.y):
+                button.click()
+                break
+    
+    
     
 def leftMouseUp(event):
     
@@ -57,12 +110,16 @@ def rightMouseUp(event):
     pass
     
 def mouseMove(event):
-    global mouse
     
-    mouse['loc'] = (event.x, event.y)
+    for button in buttons.values():
+        if button.active:
+            if button.isOver(event.x, event.y):
+                root.config(cursor = button.cursor)
+                break
+            else:
+                root.config(cursor = "")
     
 def keyDown(event):
-    global keys
     
     if event.keysym == "w":
         player.forward = True
@@ -74,7 +131,7 @@ def keyDown(event):
         player.left = True
     
 def keyUp(event):
-    global keys
+    global paused
     
     if event.keysym == "w":
         player.forward = False
@@ -91,6 +148,80 @@ def windowClose():
     if askyesno("Quit", "Are you sure you want to quit?"):
         
         exiting = True
+        
+class Button():
+    
+    def __init__(self, x, y, maxWidth, maxHeight, command, text = "", image = "", cursor = "hand2"):
+        
+        self.x = x
+        self.y = y
+        self.width = maxWidth
+        self.height = maxHeight
+        
+        self.command = command
+        
+        self.text = text
+        if text != "":
+            fontsize, self.width, self.height = self.getFontSize(text, maxWidth, maxHeight)
+            self.font = "Arial " + str(fontsize)
+        else:
+            self.font = "Arial 10"
+            
+        if image != "":
+            self.image = PhotoImage(file = image)
+        else:
+            self.image = None
+            
+        self.cursor = cursor
+        
+        self.active = False
+        
+        self.content1 = s.create_text(-100, -100, text = self.text, font = self.font, fill = "white")
+        self.content2 = s.create_image(-100, -100, image = self.image)
+        
+    def activate(self):
+        
+        self.active = True
+        s.coords(self.content1, self.x, self.y)
+        s.coords(self.content2, self.x, self.y)
+        
+    def deactivate(self):
+        
+        self.active = False
+        s.coords(self.content1, -100, -100)
+        s.coords(self.content2, -100, -100)
+        
+    def isOver(self, x, y):
+        
+        if x > self.x - self.width/2 and x < self.x + self.width/2 and y > self.y - self.height/2 and y < self.y + self.height/2:
+            return True
+        else:
+            return False
+        
+    def click(self):
+        self.command()
+            
+    def getFontSize(self, string, maxWidth, maxHeight):
+        
+        size = 10
+        com = ""
+        while True:
+            print(1)
+            font = Font(s, family = "Arial", size = size)
+            width, height = font.measure(string), font.metrics("linespace")
+            print(2)
+            if width > maxWidth or height > maxHeight:
+                print(3)
+                size -= 1
+                com = "big"
+            elif width < maxWidth:
+                print(4)
+                if com == "big":
+                    return (size, width, height)
+                size += 1
+                com = "small"
+            else:
+                return (size, width, height)
     
 class Background():
     
@@ -122,7 +253,8 @@ class Background():
                 
             self.stars[i] = (star, (x, y, size))
             
-        self.bgSpeed += 0.00027777777777
+        if paused != True:
+            self.bgSpeed += 0.00027777777777
         
 class Player():
     
@@ -130,7 +262,7 @@ class Player():
         
         self.img = PhotoImage(file = "ship.gif")
     
-        self.object = s.create_image(300, 700, image = self.img)
+        self.object = s.create_image(-100, -100, image = self.img)
         
         self.x = 300
         self.y = 700
@@ -142,6 +274,8 @@ class Player():
         
         self.xSpeed = 0
         self.ySpeed = 0
+        
+        self.lives = 3
         
         self.currentBullets = []
         self.availibleBullets = []
@@ -255,21 +389,26 @@ class Rocket():
     
 #MAIN FUNCTION
 def runGame():
-    global lives, score, paused, player
+    global score
     
     initializeVariables()
-    background = Background()
     
-    #DO MENU STUFF HERE
+    buttons['start'].activate()
+    buttons['easy'].activate()
+    buttons['medium'].activate()
+    buttons['hard'].activate()
     
-    player = Player()
-    scoreO = s.create_text(590, 10, text = "Score: " + str(score), font = "Times 15", fill = "white", anchor = NE)
+    scoreO = s.create_text(590, 10, text = "Score: " + str(score), font = "Arial 15", fill = "white", anchor = NE)
     
-    while lives > 0:
+    while player.lives > 0:
         
         startTime = int(str(datetime.now().time())[9:])
         
-        if paused == False:
+        if paused == True:
+            
+            background.update()
+            
+        else:
         
             background.update()
             player.update()
@@ -292,13 +431,13 @@ def runGame():
         if sleepTime > 0:
             sleep(sleepTime)
     
-s.bind("<Button-1>", leftMouseDown)
-s.bind("<ButtonRelease-1>", leftMouseUp)
-s.bind("<Button-3>", rightMouseDown)
-s.bind("<ButtonRelease-3>", rightMouseUp)
-s.bind("<Motion>", mouseMove)
-root.bind("<Key>", keyDown)
-root.bind("<KeyRelease>", keyUp)
+root.bind_all("<Button-1>", leftMouseDown)
+root.bind_all("<ButtonRelease-1>", leftMouseUp)
+root.bind_all("<Button-3>", rightMouseDown)
+root.bind_all("<ButtonRelease-3>", rightMouseUp)
+root.bind_all("<Motion>", mouseMove)
+root.bind_all("<Key>", keyDown)
+root.bind_all("<KeyRelease>", keyUp)
 root.protocol("WM_DELETE_WINDOW", windowClose)
 
 root.after(0, runGame)
