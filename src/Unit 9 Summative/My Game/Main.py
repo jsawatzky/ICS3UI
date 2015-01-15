@@ -18,12 +18,13 @@ s.pack()
 
 #INITIALIZERS
 def initializeVariables():
-    global player, background, lives, difficulty, score, paused, mouse, keys, exiting
+    global player, background, lives, difficulty, score, menu, paused, mouse, keys, exiting
     global buttons
     
-    difficulty = "easy"
+    difficulty = 1
     score = 0
-    paused = True
+    menu = True
+    paused = False
     exiting = False
     
     background = Background()
@@ -31,12 +32,13 @@ def initializeVariables():
     
     buttons = {}
     buttons['start'] = Button(300, 400, 200, 100, startGame, text = "Start Game")
-    buttons['easy'] = Button(175, 500, 75, 50, lambda: setDifficulty("easy"), text = "Easy")
+    buttons['easy'] = Button(175, 500, 75, 50, lambda: setDifficulty(1), text = "Easy")
     s.itemconfig(buttons['easy'].content1, fill = "green")
-    buttons['medium'] = Button(300, 500, 125, 50, lambda: setDifficulty("medium"), text = "Medium")
-    buttons['hard'] = Button(425, 500, 75, 50, lambda: setDifficulty("hard"), text = "Hard")
+    buttons['medium'] = Button(300, 500, 125, 50, lambda: setDifficulty(2), text = "Medium")
+    buttons['hard'] = Button(425, 500, 75, 50, lambda: setDifficulty(3), text = "Hard")
     buttons['pause'] = Button(25, 25, 20, 20, pauseGame, image = "pause.gif")
     buttons['resume'] = Button(300, 400, 200, 100, unpauseGame, text = "Resume")
+    buttons['quit'] = Button(300, 600, 200, 100, windowClose, text = "Quit Game")
     
     
     
@@ -44,27 +46,28 @@ def setDifficulty(diff):
     global difficulty
     
     difficultly = diff
-    if diff == "easy":
-        s.itemconfig(buttons[diff].content1, fill = "green")
+    if diff == 1:
+        s.itemconfig(buttons['easy'].content1, fill = "green")
         s.itemconfig(buttons['medium'].content1, fill = "white")
         s.itemconfig(buttons['hard'].content1, fill = "white")
-    elif diff == "medium":
+    elif diff == 2:
         s.itemconfig(buttons['easy'].content1, fill = "white")
         s.itemconfig(buttons['medium'].content1, fill = "green")
         s.itemconfig(buttons['hard'].content1, fill = "white")
-    elif diff == "hard":
+    elif diff == 3:
         s.itemconfig(buttons['easy'].content1, fill = "white")
         s.itemconfig(buttons['medium'].content1, fill = "white")
         s.itemconfig(buttons['hard'].content1, fill = "green")
     
 def startGame():
-    global paused
+    global menu
     
-    paused = False
+    menu = False
     buttons['start'].deactivate()
     buttons['easy'].deactivate()
     buttons['medium'].deactivate()
     buttons['hard'].deactivate()
+    buttons['quit'].deactivate()
     buttons['pause'].activate()
     
 def pauseGame():
@@ -73,27 +76,27 @@ def pauseGame():
     paused = True
     buttons['pause'].deactivate()
     buttons['resume'].activate()
+    buttons['quit'].activate()
     
 def unpauseGame():
     global paused
     
     paused = False
     buttons['resume'].deactivate()
+    buttons['quit'].deactivate()
     buttons['pause'].activate()
         
 #HANDLERS
 def leftMouseDown(event):
     
-    if paused == False:
-        player.fireBullet()
-    
     for button in buttons.values():
         if button.active:
             if button.isOver(event.x, event.y):
                 button.click()
-                break
-    
-    
+                return
+            
+    if paused == False and menu == False:
+        player.fireBullet()
     
 def leftMouseUp(event):
     
@@ -120,6 +123,7 @@ def mouseMove(event):
                 root.config(cursor = "")
     
 def keyDown(event):
+    global paused
     
     if event.keysym == "w":
         player.forward = True
@@ -129,6 +133,13 @@ def keyDown(event):
         player.backward = True
     if event.keysym == "d":
         player.left = True
+        
+    if event.keysym == "Escape":
+        if menu == False:
+            if paused == True:
+                unpauseGame()
+            else:
+                pauseGame()
     
 def keyUp(event):
     global paused
@@ -206,16 +217,12 @@ class Button():
         size = 10
         com = ""
         while True:
-            print(1)
             font = Font(s, family = "Arial", size = size)
             width, height = font.measure(string), font.metrics("linespace")
-            print(2)
             if width > maxWidth or height > maxHeight:
-                print(3)
                 size -= 1
                 com = "big"
             elif width < maxWidth:
-                print(4)
                 if com == "big":
                     return (size, width, height)
                 size += 1
@@ -253,7 +260,7 @@ class Background():
                 
             self.stars[i] = (star, (x, y, size))
             
-        if paused != True:
+        if paused != True and menu != True:
             self.bgSpeed += 0.00027777777777
         
 class Player():
@@ -397,30 +404,33 @@ def runGame():
     buttons['easy'].activate()
     buttons['medium'].activate()
     buttons['hard'].activate()
+    buttons['quit'].activate()
     
     scoreO = s.create_text(590, 10, text = "Score: " + str(score), font = "Arial 15", fill = "white", anchor = NE)
     
-    while player.lives > 0:
+    while exiting == False:
         
         startTime = int(str(datetime.now().time())[9:])
         
-        if paused == True:
+        if paused == True or menu == True:
             
             background.update()
             
         else:
         
-            background.update()
-            player.update()
-            
-            score += 0.3333333333
-            s.itemconfig(scoreO, text = "Score: " + str(round(score)))
+            if player.lives > 0:
+                
+                background.update()
+                player.update()
+                
+                score += 0.3333333333
+                s.itemconfig(scoreO, text = "Score: " + str(round(score)))
+                
+            else:
+                
+                pass
         
         root.update()
-        
-        if exiting == True:
-            root.destroy()
-            break
         
         endTime = int(str(datetime.now().time())[9:])
         runTime = endTime - startTime
@@ -430,6 +440,8 @@ def runGame():
         
         if sleepTime > 0:
             sleep(sleepTime)
+            
+    root.destroy()
     
 root.bind_all("<Button-1>", leftMouseDown)
 root.bind_all("<ButtonRelease-1>", leftMouseUp)
