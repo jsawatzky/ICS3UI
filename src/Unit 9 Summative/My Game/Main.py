@@ -14,13 +14,18 @@ from threading import Timer
 
 root = Tk()
 root.title("Unnamed Game")
+root.resizable(FALSE, FALSE)
 
 s = Canvas(root, height = 800, width = 600, bg = "black")
-s.pack()
+s.grid(row = 0, column = 0)
 
 #INITIALIZERS
 def initializeVariables():
-    global player, enemies, background, explosions, lives, difficulty, score, menu, paused, mouse, keys, exiting, asteroidImgs, buttons, scoreText, pausedText, gameOverText, finalScoreText, gameTitleText
+    global player, asteroidImgs, enemies, background, explosions
+    global lives, difficulty, score
+    global menu, paused, exiting
+    global buttons
+    global scoreText, pausedText, gameOverText, finalScoreText, gameTitleText, livesText
     
     difficulty = 1
     
@@ -30,7 +35,7 @@ def initializeVariables():
     paused = False
     exiting = False
     
-    background = Background()
+    background = Background(600, 800)
     
     player = Player()
     
@@ -40,9 +45,10 @@ def initializeVariables():
     explosions = Explosion()
     
     gameTitleText = s.create_text(-1000, -1000, text = "Unnamed Game", font = "Arial 55", fill = "white")
-    scoreText = s.create_text(-1000, -1000, text = "Score: ", font = "Arial 15", fill = "white", anchor = NE)
+    scoreText = s.create_text(-1000, -1000, text = "Score: 0", font = "Arial 15", fill = "white", anchor = NE)
+    livesText = s.create_text(-1000, -1000, text = "Lives left: 2", font = "Arial 15", fill = "white", anchor = SW)
     finalScoreText = s.create_text(-1000, -1000, text = "Score: ", font = "Arial 30", fill = "white")
-    pausedText = s.create_text(-1000, -1000, text = "Paused", font = "Arial 40", fill = "white")
+    pausedText = s.create_text(-1000, -1000, text = "Paused", font = "Arial 60", fill = "white")
     gameOverText = s.create_text(-1000, -1000, text = "Game Over", font = "Arial 40", fill = "white")
     
     buttons = {}
@@ -53,9 +59,10 @@ def initializeVariables():
     buttons['hard'] = Button(425, 500, 75, 50, lambda: setDifficulty(3), text = "Hard")
     buttons['pause'] = Button(25, 25, 20, 20, pauseGame, image = "pause.gif")
     buttons['resume'] = Button(300, 400, 200, 100, unpauseGame, text = "Resume")
-    buttons['quit'] = Button(300, 600, 200, 100, windowClose, text = "Quit Game")
+    buttons['quit'] = Button(300, 700, 200, 100, windowClose, text = "Quit Game")
     buttons['menu'] = Button(300, 500, 200, 100, mainMenu, text = "Main Menu")
     buttons['playagain'] = Button(300, 400, 200, 100, startGame, text = "Play Again")
+    buttons['helpcontrols'] = Button(300, 600, 200, 100, helpControls, text = "Help/Controls")
     
     
 def resetGame():
@@ -66,6 +73,7 @@ def resetGame():
     
     s.coords(pausedText, -1000, -1000)
     s.coords(scoreText, -1000, -1000)
+    s.coords(livesText, -1000, -1000)
     s.coords(finalScoreText, -1000, -1000)
     s.coords(gameOverText, -1000, -1000)
     s.coords(gameTitleText, -1000, -1000)
@@ -98,7 +106,8 @@ def startGame():
     
     menu = False
     
-    s.coords(scoreText,590, 10)
+    s.coords(scoreText, 590, 10)
+    s.coords(livesText, 10, 790)
     
     buttons['start'].deactivate()
     buttons['easy'].deactivate()
@@ -108,6 +117,7 @@ def startGame():
     buttons['resume'].deactivate()
     buttons['menu'].deactivate()
     buttons['playagain'].deactivate()
+    buttons['helpcontrols'].deactivate()
     
     buttons['pause'].activate()
     
@@ -129,6 +139,11 @@ def mainMenu():
     buttons['medium'].activate()
     buttons['hard'].activate()
     buttons['quit'].activate()
+    buttons['helpcontrols'].activate()
+    
+def helpControls():
+    
+    pass
     
 def pauseGame():
     global paused 
@@ -142,6 +157,7 @@ def pauseGame():
     buttons['resume'].activate()
     buttons['menu'].activate()
     buttons['quit'].activate()
+    buttons['helpcontrols'].activate()
     
 def unpauseGame():
     global paused
@@ -153,12 +169,14 @@ def unpauseGame():
     buttons['resume'].deactivate()
     buttons['menu'].deactivate()
     buttons['quit'].deactivate()
+    buttons['helpcontrols'].deactivate()
     
     buttons['pause'].activate()
     
 def gameOver():
     
     s.coords(scoreText, -1000, -1000)
+    s.coords(livesText, -1000, -1000)
     
     s.coords(gameOverText, 300 , 200)
     s.coords(finalScoreText, 300, 250)
@@ -169,6 +187,7 @@ def gameOver():
     buttons['menu'].activate()
     buttons['quit'].activate()
     buttons['playagain'].activate()
+    buttons['helpcontrols'].activate()
         
 #HANDLERS
 def leftMouseDown(event):
@@ -377,15 +396,18 @@ class Explosion():
     
 class Background():
     
-    def __init__(self):
+    def __init__(self, width, height):
         
         self.stars = []
         self.bgSpeed = 4
         
-        for i in range(50):
+        self.width = width
+        self.height = height
+        
+        for i in range(int(width/12)):
             
-            x = randint(0, 600)
-            y = randint(0, 800)
+            x = randint(0, width)
+            y = randint(0, height)
             size = randint(2, 3)
             self.stars.append((s.create_oval(x-size, y-size, x+size, y+size, fill = "white", outline = "white"), (x, y, size)))
             
@@ -396,8 +418,8 @@ class Background():
             star, (x, y, size) = self.stars[i]
             
             y += self.bgSpeed
-            if y > 800+size:
-                x = randint(0, 600)
+            if y > self.height+size:
+                x = randint(0, self.width)
                 size = randint(2, 3)
                 y = 0 - size
                 
@@ -448,6 +470,8 @@ class Player():
             self.availibleRockets.append(Rocket())
         self.lastRocketFire = 0
         
+        self.countdown = s.create_text(-1000, -1000, text = "3", font = "Arial 50", fill = "white")
+        
     def update(self):
         
         if self.isDead != True:
@@ -484,8 +508,14 @@ class Player():
             if clock() - self.lastDeath > 2 and self.lives > 0:
                 self.revive()
                 
-        if self.canDie == False and clock() - self.lastDeath > 5:
-            self.canDie = True
+        if self.canDie == False and self.lives > 0:
+            if clock() - self.lastDeath > 5:
+                s.coords(self.countdown, -1000, -1000)
+                self.canDie = True
+            elif clock() - self.lastDeath > 2:
+                s.tag_raise(self.countdown)
+                s.coords(self.countdown, 300, 400)
+                s.itemconfig(self.countdown, text = int(4 - (clock() - (self.lastDeath+2))))
                     
         s.coords(self.object, self.x, self.y)
         
@@ -503,6 +533,7 @@ class Player():
         
         if self.canDie == True:
             self.lives -= 1
+            s.itemconfig(livesText, text = "Lives left: " + str(self.lives - 1))
             self.isDead = True
             explosions.new(self.x, self.y, 50)
             self.x = -100
@@ -521,7 +552,7 @@ class Player():
         
     def fireBullet(self):
         
-        if clock() - self.lastBulletFire > 0.1 and self.isDead == False:
+        if clock() - self.lastBulletFire > 0.1 and self.isDead == False and self.canDie == True:
         
             bullet = self.availibleBullets.pop()
             bullet.fire(self.x, self.y)
@@ -531,7 +562,7 @@ class Player():
     
     def fireRocket(self):
         
-        if clock() - self.lastRocketFire > 1 and self.isDead == False:
+        if clock() - self.lastRocketFire > 1 and self.isDead == False and self.canDie == True:
         
             rocket = self.availibleRockets.pop()
             rocket.fire(self.x, self.y)
@@ -546,6 +577,7 @@ class Player():
         self.x = 300
         self.y = 700
         s.coords(self.object, -1000, -1000)
+        s.itemconfig(livesText, text = "Lives left: 2")
     
 class Bullet():
     
@@ -728,7 +760,7 @@ def runGame():
                 
             explosions.update()
             
-            if player.lives > 0:
+            if player.lives > 0 and player.canDie == True:
                 score += 0.166666666666
                 s.itemconfig(scoreText, text = "Score: " + str(round(score)))
         
