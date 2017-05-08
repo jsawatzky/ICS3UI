@@ -424,3 +424,8 @@ def commonFactorVaris(varis):
             varis[i2] = vari
 
     return (variCoeff, varis)
+
+while True:
+
+    expr = input("> ")
+    print(factor(expr))
